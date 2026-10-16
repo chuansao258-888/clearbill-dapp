@@ -41,3 +41,13 @@ The local mobile web page was also opened at 390 CSS px against the live Sepolia
 | E-S12 | Bill 3, Cancelled, two events | `sepolia-cancelled-mobile.png` |
 
 The remaining screenshots are a retained explorer deployment view, a real MetaMask wallet connection and approval, and an actual phone MetaMask browser view. Render hosting checks also remain outstanding.
+
+On 16 October 2026, the student approved two prompts in the Chrome MetaMask extension. The browser DApp connected first as `0x7ac1c7fb0C77332b2d74688fcA86B9c9A3d5b028`, then switched to `0x280D860553cb04D14cefC35B8726FB360DF633Ff`. It displayed pending and confirmed states for both actions. The backend checked each successful receipt and its matching contract event. The extension popups themselves were not retained as screenshot files.
+
+| Evidence | Real Chrome MetaMask action | Public link | Result |
+| --- | --- | --- | --- |
+| E-S13 | Payee created bill 4 from the DApp | [Creation](https://sepolia.etherscan.io/tx/0x225d75b21178fc20310619ab7b8caeb2d4cb764773ad62f90e3ae3e5f4f20aa7) | Confirmed in block 11925805; gas used 1,057,398; fee 0.001586097020090562 test ETH |
+| E-S14 | Payer paid bill 4's only installment of 0.0001 test ETH from the DApp | [Payment](https://sepolia.etherscan.io/tx/0xba61098143d5fb6b93846291c1dabd1567b6a2529ee6bfd557be2481d7ed609f) | Confirmed in block 11925823; gas used 172,731; fee 0.000259096502936427 test ETH |
+| E-S15 | Bill 4 shows Paid and both events at 390 CSS px | — | `sepolia-bill4-paid-mobile.png`; captured separately without a connected wallet |
+
+The fees above are observed Sepolia test ETH costs, not future fee estimates. The Chrome extension test verifies desktop wallet integration and account switching. Its Activity page rechecked the payment hash as confirmed with nine confirmations at the time of inspection and listed both bill 4 events in the payer's seven-event history. Actual phone MetaMask and retained extension-popup images remain unverified.

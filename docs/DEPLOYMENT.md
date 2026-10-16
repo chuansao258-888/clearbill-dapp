@@ -1,6 +1,6 @@
 # ClearBill Deployment and Acceptance
 
-Status: local chain exercised; Sepolia contract and CLI-signed business transactions confirmed on 16 October 2026. Real MetaMask UI testing and Render remain pending.
+Status: local chain exercised; Sepolia contract, CLI-signed business transactions and a Chrome MetaMask create/pay flow confirmed on 16 October 2026. Mobile MetaMask and Render remain pending.
 
 ## Local chain
 
@@ -20,6 +20,8 @@ For a fresh reproducible run, stop the old chain, start a new one, deploy again 
 The actual Sepolia creation transaction is `0x1642635ab30c2509edd6a04666069572f2468f22647156a5d0442e67a69ba91a`, mined in block `11925719` at `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`. An independent `npm run verify:deployment` call confirmed the receipt, chain ID and exact deployed runtime bytecode. The deployment was sent from a test key stored outside this repository; neither the key nor its RPC credentials are in this project. The one-time signing script remains ignored under `.local/`. Actual gas used was `10,778,764`; receipt gas price was `18` wei, giving a testnet fee of `0.000000000194017752` ETH. This is not a prediction of future fees. A blockchain deployment cannot be undone by a code rollback.
 
 Three bills were then exercised with authorized test accounts. Bill 1 was created, paid with 0.0001 test ETH and fully refunded; bill 2 received two payments of 0.00005 test ETH; bill 3 was cancelled before payment. All eight business receipts succeeded. The local backend configured for Sepolia independently returned the expected Refunded, Paid and Cancelled states, full event histories and confirmed transaction records. Public hashes are in [the evidence index](evidence/INDEX.md). These actions were signed by the CLI test script, not MetaMask.
+
+A separate Chrome MetaMask test connected first as the payee and then switched to the payer. The payee created bill 4 from the mobile web interface for 0.0001 test ETH, and the payer paid it through the same interface. Both wallet prompts were reviewed and approved by the student. The page showed a pending state after submission and then a mined confirmation; the backend independently verified matching creation and payment events. Bill 4 is Paid and its public hashes are in the evidence index. This was a desktop Chrome extension test, not an actual phone test.
 
 ## Render target
 
