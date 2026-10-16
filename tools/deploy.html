@@ -75,6 +75,9 @@
     try {
       const chainId = BigInt(await window.ethereum.request({ method: "eth_chainId" }));
       if (chainId !== 11155111n) throw new Error("Wallet network changed. Reconnect on Sepolia.");
+      const accounts = await window.ethereum.request({ method: "eth_accounts" });
+      const selected = await signer.getAddress();
+      if (!accounts.some(account => account.toLowerCase() === selected.toLowerCase())) throw new Error("Wallet account changed. Reconnect before deployment.");
       show("Waiting for MetaMask approval…");
       const factory = new window.ClearBillEthers.ContractFactory(artifact.abi, artifact.bytecode, signer);
       const contract = await factory.deploy();
