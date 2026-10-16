@@ -1,6 +1,6 @@
 # ClearBill Deployment and Acceptance
 
-Status: local chain exercised; Sepolia contract created and bytecode-verified on 16 October 2026. Real MetaMask business actions and Render remain pending.
+Status: local chain exercised; Sepolia contract and CLI-signed business transactions confirmed on 16 October 2026. Real MetaMask UI testing and Render remain pending.
 
 ## Local chain
 
@@ -15,9 +15,11 @@ For a fresh reproducible run, stop the old chain, start a new one, deploy again 
 3. Run `npm run serve:deployer` and open `http://127.0.0.1:3001` in a desktop browser with MetaMask. This separate tool binds to loopback only and serves the exact local compilation artifact. Check that it displays Sepolia and the intended wallet, then review MetaMask's contract-creation request and gas fee. The constructor takes no arguments. No private key enters the project or server.
 4. After user approval, the tool waits for the mined creation receipt, compares deployed runtime code byte-for-byte with the local build and offers a public `sepolia.json` download. A submitted hash alone is not a verified deployment. If the page loses connection after submission, check that hash before any retry.
 5. Put the downloaded file at `deployment/sepolia.json`. It contains only `chainId`, `contractAddress`, `deploymentBlock` and `deploymentTransactionHash`. There is intentionally no checked-in example address. Run `npm run verify:deployment` with a Sepolia RPC URL and that manifest.
-6. Test one-payment, two-installment, cancellation and full refund flows with real MetaMask, including one actual phone in the MetaMask browser. Capture genuine screenshots and receipt hashes in the evidence index.
+6. Test the wallet connection and signing flow with real MetaMask, including one actual phone in the MetaMask browser. Capture genuine screenshots and receipt hashes in the evidence index. The same business methods have already been exercised on Sepolia using authorized test keys through a one-time CLI script; this does not establish MetaMask compatibility.
 
 The actual Sepolia creation transaction is `0x1642635ab30c2509edd6a04666069572f2468f22647156a5d0442e67a69ba91a`, mined in block `11925719` at `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`. An independent `npm run verify:deployment` call confirmed the receipt, chain ID and exact deployed runtime bytecode. The deployment was sent from a test key stored outside this repository; neither the key nor its RPC credentials are in this project. The one-time signing script remains ignored under `.local/`. Actual gas used was `10,778,764`; receipt gas price was `18` wei, giving a testnet fee of `0.000000000194017752` ETH. This is not a prediction of future fees. A blockchain deployment cannot be undone by a code rollback.
+
+Three bills were then exercised with authorized test accounts. Bill 1 was created, paid with 0.0001 test ETH and fully refunded; bill 2 received two payments of 0.00005 test ETH; bill 3 was cancelled before payment. All eight business receipts succeeded. The local backend configured for Sepolia independently returned the expected Refunded, Paid and Cancelled states, full event histories and confirmed transaction records. Public hashes are in [the evidence index](evidence/INDEX.md). These actions were signed by the CLI test script, not MetaMask.
 
 ## Render target
 

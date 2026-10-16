@@ -17,4 +17,27 @@ Sampled local Hardhat receipts: one-payment creation `0x109f26d26eb7fa157a059b4d
 
 E-S01 used 10,778,764 gas at 18 wei per gas, so the receipt fee was 0.000000000194017752 test ETH. The explorer was still indexing when first viewed; the independent JSON-RPC receipt and code checks supplied the verification. A retained deployment screenshot is still pending.
 
-The following live evidence is outstanding: a retained Sepolia deployment screenshot, real MetaMask wallet connection screenshot, a successful confirmed Sepolia payment screenshot, a real mobile MetaMask layout screenshot, and Sepolia transaction/history screenshots. Record actual hashes and outcomes here only after they exist.
+The following Sepolia business transactions were signed by a one-time CLI script using test accounts controlled and authorized by the student. Each submitted receipt had status 1. The private keys were read from outside this repository and were never committed. These transactions verify contract behavior on Sepolia, not the MetaMask user interface.
+
+| Evidence | Bill and action | Transaction | Confirmed block |
+| --- | --- | --- | --- |
+| E-S02 | Bill 1 created, one payment of 0.0001 ETH | [Creation](https://sepolia.etherscan.io/tx/0xf4810216d7478f7060a4a8f2edd8aeb822d375cf15293bef640563aee926917b) | 11925748 |
+| E-S03 | Bill 1 paid by its specified payer | [Payment](https://sepolia.etherscan.io/tx/0x322c393a3bf708c2f1f1dd10113452e3cf8c6723f68e909337c79088e6bf94c8) | 11925749 |
+| E-S04 | Bill 1 fully refunded by its payee | [Refund](https://sepolia.etherscan.io/tx/0x5b7ae02a4cf9cac785b76f04ed52433cd846978905a40d4695a9fc8a52fd0726) | 11925750 |
+| E-S05 | Bill 2 created, two installments of 0.00005 ETH | [Creation](https://sepolia.etherscan.io/tx/0x48b8a3a448f90fde270922fa149ddf6649fc9e6daacd8ee17998f15274800496) | 11925751 |
+| E-S06 | Bill 2 first installment paid | [Deposit](https://sepolia.etherscan.io/tx/0xd8f4df8cf87155d77d8b87eb6da3c2d75e5be3fdc02aa47433132d0a0b1c6f09) | 11925754 |
+| E-S07 | Bill 2 second installment paid | [Balance](https://sepolia.etherscan.io/tx/0x58303ca85845fe4496a90e158cae3b2bb86656356d83344beafb0fcaea9d2e5c) | 11925755 |
+| E-S08 | Bill 3 created, unpaid | [Creation](https://sepolia.etherscan.io/tx/0x6d586fc32e7b786cf93a493ae493d6646a3d75f6efb10ab7e2f4712fb688b311) | 11925756 |
+| E-S09 | Bill 3 cancelled by its payee | [Cancellation](https://sepolia.etherscan.io/tx/0x1e2e30267160e3129dabe30aad58fea8c5888713e339c447ab0c207a1d85985d) | 11925760 |
+
+The Sepolia backend returned Refunded for bill 1 with paid and refunded principal each 0.0001 ETH, Paid for bill 2 with two paid installments, and Cancelled for bill 3 with zero paid principal. Its history endpoint returned 3, 3 and 2 matching events, respectively; all eight transaction endpoints returned confirmed with one matching contract event. Eleven live API assertions passed.
+
+The local mobile web page was also opened at 390 CSS px against the live Sepolia backend. These screenshots show genuine Sepolia bill state and event history; the browser had no connected MetaMask wallet.
+
+| Evidence | Sepolia-backed page | File |
+| --- | --- | --- |
+| E-S10 | Bill 1, Refunded, three events | `sepolia-refunded-mobile.png` |
+| E-S11 | Bill 2, Paid, three events | `sepolia-paid-mobile.png` |
+| E-S12 | Bill 3, Cancelled, two events | `sepolia-cancelled-mobile.png` |
+
+The remaining screenshots are a retained explorer deployment view, a real MetaMask wallet connection and approval, and an actual phone MetaMask browser view. Render hosting checks also remain outstanding.

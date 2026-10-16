@@ -12,9 +12,10 @@ Status at 16 October 2026 (Asia/Singapore). Branch: `feat/clearbill`.
 | Mobile web | Five pages render; 3 precision/label tests and 7 browser tests pass at phone widths |
 | Core transactions | Local browser simulation executed one-payment create/pay and two-installment deposit/full refund on the Hardhat chain |
 | History and dashboard | Browser tests loaded confirmed event history and complete chain-derived overview figures on the local chain |
-| Screenshots | Two actual local browser screenshots are indexed in `docs/evidence/INDEX.md`; the wallet is simulated |
+| Screenshots | Two local-chain browser screenshots and three genuine Sepolia-backed mobile-page screenshots are indexed in `docs/evidence/INDEX.md`; none proves a real MetaMask connection |
 | Sepolia deployment | Real creation receipt and exact runtime bytecode verified at `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`; public manifest added |
-| Sepolia backend | Separate local server passed `/health` and `/config`; account bill query returned a genuine empty list before any business transaction |
+| Sepolia business flow | Three real bills and eight business transactions confirmed: single payment and refund, two installments, unpaid cancellation; hashes indexed in `docs/evidence/INDEX.md` |
+| Sepolia backend | Separate local server passed `/health` and `/config`; 11 live API assertions checked three final bill states, their histories and all eight confirmed transaction records |
 
 `npm test` produced 11 contract, 3 API and 3 frontend passing cases. `npm run test:browser` produced 7 passing cases while the local chain, deployment and server were running. A sampled local one-payment creation used 284,086 gas, its payment 71,756 gas and a local full refund 70,388 gas; receipt hashes are recorded in the evidence index. `npm audit --omit=dev` reported zero production dependency advisories at this checkpoint. These figures are local and time-specific.
 
@@ -24,10 +25,10 @@ Status at 16 October 2026 (Asia/Singapore). Branch: `feat/clearbill`.
 | --- | --- |
 | Real MetaMask | Desktop connection, rejection, account switching and signed transaction screenshots |
 | Mobile MetaMask | Actual phone in MetaMask's browser, transaction approval and usable layout |
-| Sepolia business flow | Successful payment/refund hashes, UI confirmation and screenshots |
+| Sepolia UI evidence | Real-wallet approval and confirmation screenshots; current Sepolia-backed pages were viewed without MetaMask |
 | Render | HTTPS service health, public configuration and post-restart history reads |
 
-The Sepolia deployment address and transaction are verified. No live business transaction, hosting URL or real-wallet UI result is yet claimed. The student is preparing the assignment report separately outside Git.
+The Sepolia deployment and CLI-signed business transactions are verified. No hosting URL or real-wallet UI result is yet claimed. The student is preparing the assignment report separately outside Git.
 
 ## Implementation adjustments
 
@@ -37,4 +38,4 @@ The mobile-first requirement supersedes an earlier desktop-priority suggestion. 
 
 ## Remaining operational prerequisites
 
-The submission deadline, a funded Sepolia test wallet, access to an actual phone with MetaMask and a Render account have not been confirmed. These affect live verification and publication, not the completed local implementation. Never request or place a private key in the repository or backend.
+Authorized funded Sepolia test accounts and a phone with MetaMask are available. A Render account and actual phone browser verification remain outstanding. These affect publication and wallet-specific acceptance, not the verified contract transactions. Never place a private key in the repository or backend.

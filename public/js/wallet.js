@@ -46,7 +46,8 @@ export function mountWalletControl(onChange = () => {}) {
     try {
       const account = await currentWallet();
       button.textContent = account ? `${account.slice(0, 6)}…${account.slice(-4)}` : "Connect wallet";
-      note.textContent = account ? "Wallet connected" : "Connect to view your bills";
+      const onBillDetail = /^\/bills\/\d+$/.test(window.location.pathname);
+      note.textContent = account ? "Wallet connected" : onBillDetail ? "Connect to manage this bill." : "Connect to view your bills";
       onChange(account);
     } catch (error) { note.textContent = error.message; }
   };
