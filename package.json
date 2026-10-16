@@ -1,0 +1,30 @@
+{
+  "name": "clearbill",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "hardhat compile && node scripts/export-contract.js",
+    "chain": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy-local.js --network localhost",
+    "start": "node server/index.js",
+    "test:contract": "hardhat test",
+    "test:api": "node --test tests/api/*.test.js",
+    "test:frontend": "node --test tests/frontend/*.test.js",
+    "test:browser": "playwright test",
+    "test": "npm run test:contract && npm run test:api && npm run test:frontend",
+    "verify:deployment": "node scripts/verify-deployment.js"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "5.6.1",
+    "dotenv": "16.6.1",
+    "ethers": "6.17.0",
+    "express": "5.3.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "6.1.2",
+    "@playwright/test": "1.56.1",
+    "esbuild": "0.28.2",
+    "hardhat": "2.29.1"
+  }
+}
