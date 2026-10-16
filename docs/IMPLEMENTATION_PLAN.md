@@ -1,6 +1,6 @@
 # ClearBill Implementation Plan
 
-Status: P0-P4 implemented and exercised locally; live deployment and real-wallet acceptance remain outstanding. Branch: `feat/clearbill`. The inventory below records the P0 plan; actual status is maintained in [Progress](PROGRESS.md).
+Status: P0-P4 implemented and exercised locally; Sepolia contract deployment is verified, while real-wallet business actions and hosting remain outstanding. Branch: `feat/clearbill`. The inventory below records the P0 plan; actual status is maintained in [Progress](PROGRESS.md).
 
 ## Delivery approach
 

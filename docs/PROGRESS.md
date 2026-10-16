@@ -13,6 +13,8 @@ Status at 16 October 2026 (Asia/Singapore). Branch: `feat/clearbill`.
 | Core transactions | Local browser simulation executed one-payment create/pay and two-installment deposit/full refund on the Hardhat chain |
 | History and dashboard | Browser tests loaded confirmed event history and complete chain-derived overview figures on the local chain |
 | Screenshots | Two actual local browser screenshots are indexed in `docs/evidence/INDEX.md`; the wallet is simulated |
+| Sepolia deployment | Real creation receipt and exact runtime bytecode verified at `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`; public manifest added |
+| Sepolia backend | Separate local server passed `/health` and `/config`; account bill query returned a genuine empty list before any business transaction |
 
 `npm test` produced 11 contract, 3 API and 3 frontend passing cases. `npm run test:browser` produced 7 passing cases while the local chain, deployment and server were running. A sampled local one-payment creation used 284,086 gas, its payment 71,756 gas and a local full refund 70,388 gas; receipt hashes are recorded in the evidence index. `npm audit --omit=dev` reported zero production dependency advisories at this checkpoint. These figures are local and time-specific.
 
@@ -22,10 +24,10 @@ Status at 16 October 2026 (Asia/Singapore). Branch: `feat/clearbill`.
 | --- | --- |
 | Real MetaMask | Desktop connection, rejection, account switching and signed transaction screenshots |
 | Mobile MetaMask | Actual phone in MetaMask's browser, transaction approval and usable layout |
-| Sepolia | Funded test account, verified deployment receipt/code, successful payment/refund hashes and screenshots |
+| Sepolia business flow | Successful payment/refund hashes, UI confirmation and screenshots |
 | Render | HTTPS service health, public configuration and post-restart history reads |
 
-No Sepolia address, live transaction, hosting URL or real-wallet result is claimed. The student is preparing the assignment report separately outside Git.
+The Sepolia deployment address and transaction are verified. No live business transaction, hosting URL or real-wallet UI result is yet claimed. The student is preparing the assignment report separately outside Git.
 
 ## Implementation adjustments
 

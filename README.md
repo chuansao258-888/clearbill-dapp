@@ -4,7 +4,7 @@ ClearBill is a mobile web DApp for freelancers to issue a one-payment or deposit
 
 ## Current status
 
-The Solidity contract, Express read API and five mobile pages run locally. Local automated checks cover the core create, pay, cancel and refund rules. Browser checks use simulated injected wallets backed by an isolated Hardhat chain. A Sepolia deployment, real MetaMask acceptance, Render deployment and public explorer evidence have not been completed.
+The Solidity contract, Express read API and five mobile pages run locally. Local automated checks cover the core create, pay, cancel and refund rules. Browser checks use simulated injected wallets backed by an isolated Hardhat chain. The contract is also deployed and bytecode-verified on Sepolia; real MetaMask business actions, mobile wallet acceptance and Render deployment have not been completed.
 
 ## Requirements
 
@@ -41,9 +41,9 @@ npm run test:browser
 
 `npm test` runs isolated contract, API and amount tests. The browser suite requires the local chain, deployed contract and server from the setup above. It creates its own local bills, and its injected wallet is a simulation; its success does not establish real MetaMask compatibility. The selected screenshots in `docs/evidence/` are labelled accordingly.
 
-`npm run verify:deployment` checks a manifest against its chain receipt and code. It requires `RPC_URL` and `DEPLOYMENT_FILE`. Manual Sepolia and Render steps, with unmet prerequisites, are in [Deployment](docs/DEPLOYMENT.md).
+`npm run verify:deployment` checks a manifest against its chain receipt and code. It requires `RPC_URL` and `DEPLOYMENT_FILE`. The verified Sepolia manifest is in `deployment/sepolia.json`; set `CHAIN_ID=11155111` and a Sepolia `RPC_URL` for the server. Actual deployment and remaining acceptance steps are in [Deployment](docs/DEPLOYMENT.md).
 
-For wallet-based Sepolia deployment, run `npm run serve:deployer` after `npm run build`, then open `http://127.0.0.1:3001` in a desktop browser with MetaMask. This separate loopback-only tool deploys the exact local artifact after a human wallet approval and downloads a public manifest. See [Deployment](docs/DEPLOYMENT.md) before signing.
+The optional `npm run serve:deployer` tool can deploy a future instance using MetaMask without exposing a key to the server. A second deployment would create a separate ledger and must not silently replace the verified manifest.
 
 ## Product behavior
 

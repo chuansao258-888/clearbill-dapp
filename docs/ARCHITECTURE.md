@@ -1,6 +1,6 @@
 # ClearBill System Architecture
 
-Status: implemented and checked on a local Hardhat chain. Sepolia, real MetaMask and hosting remain unverified.
+Status: implemented on a local Hardhat chain; contract and backend configuration verified on Sepolia. Real MetaMask actions and hosting remain unverified.
 
 ## Components and trust boundaries
 
