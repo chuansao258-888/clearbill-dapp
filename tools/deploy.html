@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ClearBill Sepolia deployment</title>
+  <style>
+    :root{font-family:system-ui,sans-serif;color:#172339;background:#f4f6fb}body{margin:0;padding:24px}main{max-width:640px;margin:auto}section{background:white;padding:22px;border-radius:16px;box-shadow:0 3px 18px #17233912;margin:18px 0}h1{font-size:1.6rem}p,li{line-height:1.5}button{border:0;border-radius:10px;padding:12px 16px;background:#194bbb;color:white;font-weight:700;cursor:pointer}button:disabled{background:#9ba6bb;cursor:not-allowed}code,pre{overflow-wrap:anywhere}pre{white-space:pre-wrap;background:#edf2fb;padding:14px;border-radius:8px}.muted{color:#52637c}.error{color:#a81936}.good{color:#156638}
+  </style>
+  <script src="/ethers.min.js"></script>
+</head>
+<body><main>
+  <h1>ClearBill Sepolia deployment</h1>
+  <p>This local tool sends the compiled ClearBill contract to MetaMask. It does not ask for a seed phrase or private key. Deployment spends Sepolia test ETH and is permanent on that test network.</p>
+  <section>
+    <h2>Build and wallet</h2>
+    <p id="build">Loading local build…</p>
+    <p id="wallet">Wallet not connected.</p>
+    <button id="connect" type="button">Connect MetaMask</button>
+  </section>
+  <section>
+    <h2>Review deployment</h2>
+    <ul><li>Network: Ethereum Sepolia (11155111)</li><li>Contract: ClearBill, no constructor arguments</li><li>Wallet signs one contract-creation transaction</li></ul>
+    <p id="estimate" class="muted">Connect the wallet to estimate gas.</p>
+    <button id="deploy" type="button" disabled>Deploy ClearBill on Sepolia</button>
+    <p id="status" role="status" aria-live="polite"></p>
+  </section>
+  <section id="result" hidden>
+    <h2>Verified deployment</h2>
+    <p>The mined receipt and runtime bytecode match this local build. Download the public manifest and place it at <code>deployment/sepolia.json</code>.</p>
+    <pre id="manifest"></pre>
+    <button id="download" type="button">Download manifest</button>
+  </section>
+</main>
+<script>
+  let artifact, provider, signer, deployment, submittedHash = null;
+  const $ = selector => document.querySelector(selector);
+
+  /** Shows a status or an actionable error without interpreting a hash as success. */
+  function show(message, failed = false) {
+    $("#status").textContent = message;
+    $("#status").className = failed ? "error" : "good";
+  }
+
+  /** Loads the exact compiled contract artifact from this loopback server. */
+  async function loadBuild() {
+    const response = await fetch("/artifact.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("Build unavailable. Run npm run build and restart this tool.");
+    artifact = await response.json();
+    if (!artifact.bytecode || !artifact.deployedBytecode) throw new Error("The contract build is incomplete.");
+    const hash = window.ClearBillEthers.keccak256(artifact.bytecode);
+    $("#build").textContent = `ClearBill build loaded. Creation bytecode hash: ${hash}`;
+  }
+
+  /** Requests account access and checks the wallet's live Sepolia network. */
+  async function connect() {
+    if (!window.ethereum?.isMetaMask) throw new Error("Open this page in a browser with MetaMask.");
+    if (!artifact) await loadBuild();
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const chainId = BigInt(await window.ethereum.request({ method: "eth_chainId" }));
+    if (chainId !== 11155111n) throw new Error("Switch MetaMask to Ethereum Sepolia and connect again.");
+    provider = new window.ClearBillEthers.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    $("#wallet").textContent = `Connected: ${await signer.getAddress()}`;
+    const factory = new window.ClearBillEthers.ContractFactory(artifact.abi, artifact.bytecode, signer);
+    const transaction = await factory.getDeployTransaction();
+    const gas = await signer.estimateGas(transaction);
+    $("#estimate").textContent = `Estimated gas limit: ${gas.toString()} units. MetaMask shows the current test ETH fee before approval.`;
+    $("#deploy").disabled = false;
+  }
+
+  /** Submits the reviewed contract creation and verifies receipt and runtime code. */
+  async function deploy() {
+    $("#deploy").disabled = true;
+    try {
+      const chainId = BigInt(await window.ethereum.request({ method: "eth_chainId" }));
+      if (chainId !== 11155111n) throw new Error("Wallet network changed. Reconnect on Sepolia.");
+      show("Waiting for MetaMask approval…");
+      const factory = new window.ClearBillEthers.ContractFactory(artifact.abi, artifact.bytecode, signer);
+      const contract = await factory.deploy();
+      const transaction = contract.deploymentTransaction();
+      submittedHash = transaction.hash;
+      show(`Submitted ${transaction.hash}. Waiting for a mined receipt…`);
+      const receipt = await transaction.wait();
+      if (!receipt || receipt.status !== 1 || !receipt.contractAddress) throw new Error(`Deployment did not succeed. Transaction: ${transaction.hash}`);
+      const code = await provider.getCode(receipt.contractAddress);
+      if (code.toLowerCase() !== artifact.deployedBytecode.toLowerCase()) throw new Error(`Receipt mined, but runtime code differs from the local build. Transaction: ${transaction.hash}`);
+      deployment = { chainId: 11155111, contractAddress: receipt.contractAddress, deploymentBlock: receipt.blockNumber, deploymentTransactionHash: transaction.hash };
+      $("#manifest").textContent = JSON.stringify(deployment, null, 2);
+      $("#result").hidden = false;
+      show(`Verified in block ${receipt.blockNumber}. Save the manifest and transaction hash.`);
+    } catch (error) {
+      const detail = error?.shortMessage || error?.message || "Deployment could not be verified.";
+      show(submittedHash ? `${detail} Check transaction ${submittedHash} before any retry.` : detail, true);
+      if (!submittedHash) $("#deploy").disabled = false;
+    }
+  }
+
+  /** Downloads public deployment metadata without exporting wallet secrets. */
+  function download() {
+    if (!deployment) return;
+    const blob = new Blob([`${JSON.stringify(deployment, null, 2)}\n`], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "sepolia.json";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 60_000);
+  }
+
+  $("#connect").addEventListener("click", () => connect().catch(error => show(error?.shortMessage || error?.message || "Wallet connection failed.", true)));
+  $("#deploy").addEventListener("click", deploy);
+  $("#download").addEventListener("click", download);
+  loadBuild().catch(error => { $("#build").textContent = error.message; $("#build").className = "error"; });
+</script>
+</body></html>

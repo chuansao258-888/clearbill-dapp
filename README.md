@@ -43,6 +43,8 @@ npm run test:browser
 
 `npm run verify:deployment` checks a manifest against its chain receipt and code. It requires `RPC_URL` and `DEPLOYMENT_FILE`. Manual Sepolia and Render steps, with unmet prerequisites, are in [Deployment](docs/DEPLOYMENT.md).
 
+For wallet-based Sepolia deployment, run `npm run serve:deployer` after `npm run build`, then open `http://127.0.0.1:3001` in a desktop browser with MetaMask. This separate loopback-only tool deploys the exact local artifact after a human wallet approval and downloads a public manifest. See [Deployment](docs/DEPLOYMENT.md) before signing.
+
 ## Product behavior
 
 - The bill creator is the payee. The payer, amounts, public label and deadlines are immutable.

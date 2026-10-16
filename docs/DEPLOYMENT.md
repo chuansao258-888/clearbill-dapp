@@ -12,12 +12,12 @@ For a fresh reproducible run, stop the old chain, start a new one, deploy again 
 
 1. Prepare dedicated MetaMask test accounts and obtain Sepolia test ETH from a legitimate faucet. Never use real ETH or a mainnet key for the coursework demonstration.
 2. Build the repository with `npm ci` and `npm run build`. Record the exact commit, compiler and optimizer settings.
-3. Deploy the exact `ClearBill.sol` build on Sepolia using Remix with MetaMask or another wallet-based deployment path. The constructor takes no arguments. Do not type a private key into Remix, a browser form or Render.
-4. Save the actual creation transaction hash, block number and contract address. Verify that the mined receipt succeeded and the deployed runtime bytecode equals the local artifact's `deployedBytecode`.
-5. Write `deployment/sepolia.json` with `chainId`, `contractAddress`, `deploymentBlock` and `deploymentTransactionHash`. There is intentionally no checked-in example address. Run `npm run verify:deployment` with the Sepolia RPC and that manifest.
+3. Run `npm run serve:deployer` and open `http://127.0.0.1:3001` in a desktop browser with MetaMask. This separate tool binds to loopback only and serves the exact local compilation artifact. Check that it displays Sepolia and the intended wallet, then review MetaMask's contract-creation request and gas fee. The constructor takes no arguments. No private key enters the project or server.
+4. After user approval, the tool waits for the mined creation receipt, compares deployed runtime code byte-for-byte with the local build and offers a public `sepolia.json` download. A submitted hash alone is not a verified deployment. If the page loses connection after submission, check that hash before any retry.
+5. Put the downloaded file at `deployment/sepolia.json`. It contains only `chainId`, `contractAddress`, `deploymentBlock` and `deploymentTransactionHash`. There is intentionally no checked-in example address. Run `npm run verify:deployment` with a Sepolia RPC URL and that manifest.
 6. Test one-payment, two-installment, cancellation and full refund flows with real MetaMask, including one actual phone in the MetaMask browser. Capture genuine screenshots and receipt hashes in the evidence index.
 
-The current repository has no verified Sepolia manifest. The Sepolia procedure is a checklist, not a completed deployment record. Before performing the live deployment, confirm access to a funded test wallet and the network. A blockchain deployment cannot be undone by a code rollback.
+The current repository has no verified Sepolia manifest. The Sepolia procedure is a checklist, not a completed deployment record. The test wallet and Sepolia funding are available; the wallet holder must approve the actual contract-creation transaction. A blockchain deployment cannot be undone by a code rollback.
 
 ## Render target
 
