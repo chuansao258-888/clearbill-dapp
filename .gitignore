@@ -1,0 +1,36 @@
+# Course materials
+/docs/SC6113 Individual Assignment.docx
+/course-materials/
+
+# Dependencies and generated files
+node_modules/
+artifacts/
+cache/
+coverage/
+test-results/
+playwright-report/
+dist/
+/public/vendor/
+.local/
+tmp/
+*.log
+*.zip
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.keystore
+
+# Editor and local workflow state
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+
+# User-authored report materials stay outside Git; selected test screenshots remain tracked.
+/report/
+/scripts/build-report.py
+/docs/REPORT_OUTLINE.md
