@@ -1,6 +1,6 @@
 # ClearBill System Architecture
 
-Status: planned architecture. No component has been implemented or deployed.
+Status: implemented and checked on a local Hardhat chain. Sepolia, real MetaMask and hosting remain unverified.
 
 ## Components and trust boundaries
 
@@ -77,7 +77,7 @@ Use a local test chain during development, Sepolia for live evidence and Render 
 
 The checked-in deployment manifest contains only `chainId`, `contractAddress`, `deploymentBlock`, `deploymentTransactionHash` and compiler/build identifiers. It is created only after verifying a real deployment receipt. At startup, the backend checks chain ID, nonempty deployed code, manifest block and the expected artifact/runtime identity. ABI and manifest must come from the same build. A mismatch disables application reads with a setup error rather than falling back to another chain.
 
-The browser verifies MetaMask's chain before a transaction. Missing configuration produces a setup screen with no active payment buttons. No placeholder deployment address is treated as usable.
+The browser verifies MetaMask's chain before a transaction. If deployment configuration is missing or invalid, the server refuses to start, so payment pages are not served. No placeholder deployment address is treated as usable.
 
 ## Rollback and failure behavior
 

@@ -1,31 +1,38 @@
 # ClearBill Progress Record
 
-## Current status
+Status at 16 October 2026 (Asia/Singapore). Branch: `feat/clearbill`.
 
-The seven-module product scope and mobile-first interface direction are confirmed. The design package describes intended behavior. Source implementation, contract compilation, automated tests, wallet acceptance, deployment and report generation have not started.
+## Implemented and checked locally
 
-| Phase | Status | Evidence |
-| --- | --- | --- |
-| P0 Design | Complete | Design documents linked from README; checks below |
-| P1 Single-payment flow | Not started | None |
-| P2 Installments and cancellation | Not started | None |
-| P3 Refunds | Not started | None |
-| P4 Dashboard and history | Not started | None |
-| P5 Live deployment and mobile verification | Not started | None |
-| P6 Report and submission | Not started | None |
+| Area | Actual status and evidence |
+| --- | --- |
+| Design | English PRD, contract design, architecture, API, data, mobile UI, security, test and delivery documents exist |
+| Contract | `ClearBill.sol` compiles with Solidity 0.8.28; 11 local contract tests pass |
+| Backend | Express reads a verified local deployment; 3 API tests pass; direct local create/pay receipt and event reads succeeded |
+| Mobile web | Five pages render; 3 precision/label tests and 7 browser tests pass at phone widths |
+| Core transactions | Local browser simulation executed one-payment create/pay and two-installment deposit/full refund on the Hardhat chain |
+| History and dashboard | Browser tests loaded confirmed event history and complete chain-derived overview figures on the local chain |
+| Screenshots | Two actual local browser screenshots are indexed in `docs/evidence/INDEX.md`; the wallet is simulated |
 
-## Design decisions
+`npm test` produced 11 contract, 3 API and 3 frontend passing cases. `npm run test:browser` produced 7 passing cases while the local chain, deployment and server were running. A sampled local one-payment creation used 284,086 gas, its payment 71,756 gas and a local full refund 70,388 gas; receipt hashes are recorded in the evidence index. `npm audit --omit=dev` reported zero production dependency advisories at this checkpoint. These figures are local and time-specific.
 
-Confirmed: Node.js backend, direct settlement, one/two installments, late payments, unpaid-only cancellation, voluntary full refund and closure, public short label, no identity registration, no application database, Sepolia test ETH, Render target, mobile-first English interface.
+## Not yet verified
 
-The mobile-first requirement supersedes the earlier desktop-priority suggestion. The late-payment rule supersedes the initial suggestion to reject payments after expiry. No expired terminal status exists.
+| Area | Required next evidence |
+| --- | --- |
+| Real MetaMask | Desktop connection, rejection, account switching and signed transaction screenshots |
+| Mobile MetaMask | Actual phone in MetaMask's browser, transaction approval and usable layout |
+| Sepolia | Funded test account, verified deployment receipt/code, successful payment/refund hashes and screenshots |
+| Render | HTTPS service health, public configuration and post-restart history reads |
 
-## Verification record
+No Sepolia address, live transaction, hosting URL or real-wallet result is claimed. The student is preparing the assignment report separately outside Git.
 
-The local individual assignment document was read and its required functionality, report headings, deliverables and marking rubric were compared with the design. Application test results, deployment addresses and transaction hashes are intentionally absent until verified.
+## Implementation adjustments
 
-Documentation checks on 16 October 2026: all 12 Markdown files have valid local links and balanced code fences. Contract methods, state transitions, API field names, principal/refund arithmetic and test coverage were checked for consistency. Git ignore probes confirmed exclusion of the course document, environment secrets, dependencies and generated artifacts; selected evidence and report output remain eligible for version control. These checks validate documents only, not executable behavior.
+Hardhat's default test path yielded zero discovered tests; `hardhat.config.js` now points to `tests/contracts/`. Hostile receiver contracts compile under `contracts/test/` because Hardhat compiles contracts from its source tree. Browser assertions check the bill's status field directly after an earlier assertion could match a similarly named amount row. The matching Playwright Chromium build was installed before UI verification.
 
-## Next work
+The mobile-first requirement supersedes an earlier desktop-priority suggestion. Late payment remains allowed. The initial release has one business contract, no database and no custodial escrow.
 
-Implement P1 when development is requested. Before live acceptance, record deadline, test-wallet readiness, real mobile device access and hosting account availability. These operational prerequisites do not change the agreed design.
+## Remaining operational prerequisites
+
+The submission deadline, a funded Sepolia test wallet, access to an actual phone with MetaMask and a Render account have not been confirmed. These affect live verification and publication, not the completed local implementation. Never request or place a private key in the repository or backend.

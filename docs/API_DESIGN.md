@@ -1,6 +1,6 @@
 # ClearBill API Design
 
-Status: planned interface. Base path: `/api/v1`. All application endpoints are read-only GET requests. Blockchain writes use the contract methods documented in [Smart contract design](SMART_CONTRACT_DESIGN.md).
+Status: implemented and checked locally. Base path: `/api/v1`. All application endpoints are read-only GET requests. Blockchain writes use the contract methods documented in [Smart contract design](SMART_CONTRACT_DESIGN.md).
 
 ## Conventions
 
@@ -29,7 +29,6 @@ Errors have this shape:
 | 409 | SNAPSHOT_CHANGED, TRANSACTION_SCOPE_MISMATCH | Reorganization or unrelated transaction |
 | 503 | SETUP_REQUIRED, CHAIN_UNAVAILABLE, RPC_LIMIT | Configuration, provider availability or query capacity failure |
 | 504 | CHAIN_TIMEOUT | RPC request exceeded the configured timeout |
-| 500 | INTERNAL_ERROR | Unexpected server failure; sanitized diagnostic |
 
 ## Snapshot schema
 
@@ -62,7 +61,7 @@ Snapshot {
 
 `/config` returns `chainId`, `chainName`, `currencySymbol`, `contractAddress`, `deploymentBlock`, `explorerBaseUrl` and `abi`. Values come from validated configuration and build artifacts, never hard-coded sample deployment values. The ABI exposes no secret. RPC URLs are not included. Missing or mismatched deployment returns 503.
 
-`/health` returns `{status:"ready",chainReady:true}` or `{status:"degraded",chainReady:false}`. It contains no secrets or detailed provider diagnostics. A running process with broken deployment configuration is not reported as ready.
+`/health` returns `{status:"ready",chainReady:true}` when receipt and code checks succeed. A chain or deployment failure returns a sanitized 503 error. A missing or malformed startup configuration prevents the server from listening.
 
 ## Bill schema
 

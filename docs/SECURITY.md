@@ -1,6 +1,6 @@
 # ClearBill Security and Privacy Design
 
-Status: planned controls. No audit or penetration test has been performed.
+Status: selected contract controls and local regression cases implemented. No professional audit or penetration test has been performed.
 
 ## Assets and assumptions
 

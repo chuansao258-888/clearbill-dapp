@@ -1,6 +1,6 @@
 # ClearBill Test and Evidence Plan
 
-Status: all application tests are planned and not run. There are no deployment or transaction results yet.
+Status: local contract, API, amount and browser checks run; live Sepolia and real MetaMask cases remain pending. Actual local results are in `PROGRESS.md` and `evidence/INDEX.md`.
 
 ## Test levels
 

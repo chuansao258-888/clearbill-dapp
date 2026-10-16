@@ -1,6 +1,6 @@
 # ClearBill Data and Storage Design
 
-Status: design specification. No database or stored application data exists yet.
+Status: on-chain records and browser recovery storage implemented locally. No application database is used.
 
 ## Database decision
 

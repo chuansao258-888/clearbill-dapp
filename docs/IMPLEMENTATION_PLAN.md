@@ -1,6 +1,6 @@
 # ClearBill Implementation Plan
 
-Status: planned work. The only current deliverable is the design documentation. Branch: `feat/clearbill`.
+Status: P0-P4 implemented and exercised locally; live deployment and real-wallet acceptance remain outstanding. Branch: `feat/clearbill`. The inventory below records the P0 plan; actual status is maintained in [Progress](PROGRESS.md).
 
 ## Delivery approach
 
@@ -81,22 +81,18 @@ Individual Work/
 │   ├── SECURITY.md                         [existing] safeguards and limits
 │   ├── TEST_PLAN.md                        [existing] tests and evidence requirements
 │   ├── IMPLEMENTATION_PLAN.md              [existing] phases and inventory
-│   ├── REPORT_OUTLINE.md                   [existing] required report sections
 │   ├── PROGRESS.md                         [existing] actual status
 │   ├── DEPLOYMENT.md                       [planned P5] tested local/Sepolia/Render steps
 │   └── evidence/
 │       ├── INDEX.md                        [planned P5] actual run and screenshot ledger
 │       └── descriptive-screenshot.png      [planned P5] selected actual evidence
-├── report/
-│   ├── report.md                           [planned P6] report source with real results
-│   └── ClearBill-Report.pdf                [planned P6] verified 5–8 page report
 ├── artifacts/                              [generated, ignored] compiler output
 ├── test-results/                           [generated, ignored] raw run artifacts
 ├── node_modules/                           [generated, ignored] installed dependencies
 └── .local/                                 [generated, ignored] local manifest and ABI
 ```
 
-The vendor bundle is produced during setup/build from the locked package, with its license notice preserved. The backend reads the ABI from the generated build artifact; `/config` supplies it to the browser. A clean checkout must regenerate those files with documented commands. Test tooling must explicitly compile the receiver fixtures under `tests/contracts/fixtures`; production deployment includes only ClearBill. The Sepolia manifest is committed only after successful verification and contains no secrets. Selected report and screenshot deliverables are retained even though temporary build outputs are ignored.
+The vendor bundle is produced during setup/build from the locked package, with its license notice preserved. The backend reads the ABI from the generated build artifact; `/config` supplies it to the browser. A clean checkout must regenerate those files with documented commands. Test-only hostile receiver contracts live under `contracts/test/` so Hardhat compiles them; production deployment includes only ClearBill. The Sepolia manifest is committed only after successful verification and contains no secrets. Selected test screenshots are retained even though temporary build outputs are ignored. Student-authored report files remain outside Git.
 
 ## Phase plan
 
@@ -107,8 +103,8 @@ The vendor bundle is produced during setup/build from the locked package, with i
 | P2 | Two-installment payments, overdue display and cancellation | Contract schedule/cancel logic, quote/read mapping, forms/detail actions | Refund P3, full activity/dashboard P4 | CT-03/08/10/11/12/16/17/18 payment-cancel portion, matching browser flows; `feat: add installments and unpaid bill cancellation` |
 | P3 | Exact full refunds and closure | Refund method, error/event decoding, detail review and receipt UI | Aggregate reporting P4 | CT-13–18 refund portions, transfer/guard regression tests; `feat: add full bill refunds` |
 | P4 | Complete mobile dashboard, lists, history filters and CSV | Bounded chain reads, snapshot APIs, overview/activity screens | Live release/evidence P5 | API-04/05/06/09/10/11, UI-08/09, AC-10/11/12; `feat: add bill reporting and transaction history` |
-| P5 | Verified Sepolia deployment, Render service and mobile acceptance | Deployment scripts/manifest, hosting, setup instructions, evidence and focused fixes | Final report P6 | Full regression suite and manual live scenarios; `test: verify Sepolia and mobile wallet workflows` |
-| P6 | Reproducible submission and report | README, report, selected screenshots and packaging | Excluded features remain excluded | Clean setup, link/file audit, PDF page/layout inspection; `docs: complete assignment report and submission guide` |
+| P5 | Verified Sepolia deployment, Render service and mobile acceptance | Deployment scripts/manifest, hosting, setup instructions, evidence and focused fixes | Submission packaging P6 | Full regression suite and manual live scenarios; `test: verify Sepolia and mobile wallet workflows` |
+| P6 | Reproducible source submission | README, selected screenshots and packaging | Student-authored report remains outside Git | Clean setup and link/file audit; `docs: finalize source submission guide` |
 
 Each phase depends on the previous verified checkpoint. The single contract interface described in the design is the target; intermediate local builds may implement only their phase's functions. No partial contract is deployed to Sepolia as the final release. Cross-cutting permissions, input validation and transaction feedback ship with each action, not at the end.
 
@@ -118,7 +114,7 @@ No phase permits unrelated refactoring, new frameworks, custody, private signing
 
 Use Node.js, Express, ethers, Hardhat, OpenZeppelin Contracts and Playwright. Pin mutually compatible stable releases and compiler settings in P1 after checking their official documentation; do not assume an unverified version combination works. Hardhat is for development and testing, not the production web server. Test fixtures are additional test contracts, not additional production business contracts.
 
-The following npm script names are a specification, not commands available today:
+The following npm scripts are implemented; the browser suite still requires a running local chain, deployment and server:
 
 | Planned command | Required outcome |
 | --- | --- |
@@ -155,4 +151,4 @@ The submission deadline, real phone availability, test-wallet funding and hostin
 
 ## Definition of done
 
-All PRD acceptance criteria have evidence; tests distinguish local and live environments; actual wallet/deployment screenshots exist; secrets and course materials are excluded; README reproduces setup; public addresses and receipts are verified; the PDF has 5–8 readable pages and all required sections. No unimplemented feature is described as working.
+All application acceptance criteria have evidence; tests distinguish local and live environments; actual wallet/deployment screenshots exist; secrets and course materials are excluded; README reproduces setup; public addresses and receipts are verified. The student manages the separate PDF submission. No unimplemented feature is described as working.

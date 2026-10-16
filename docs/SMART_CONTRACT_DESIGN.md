@@ -1,6 +1,6 @@
 # ClearBill Smart Contract Design
 
-Status: specification; not compiled, deployed or tested. This document defines the intended interface of `ClearBill.sol`. Code blocks are interface sketches, not a working contract.
+Status: implemented, compiled and tested on a local Hardhat chain; Sepolia deployment remains pending. This document explains the contract interface. Code blocks are explanatory sketches; `contracts/ClearBill.sol` is authoritative.
 
 ## Responsibility and deployment
 

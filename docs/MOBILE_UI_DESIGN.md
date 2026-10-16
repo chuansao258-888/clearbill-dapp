@@ -1,6 +1,6 @@
 # ClearBill Mobile Interface Design
 
-Status: layout and interaction specification. No screens have been implemented or tested.
+Status: five mobile pages implemented and checked with a simulated wallet at local phone viewports. Real MetaMask mobile remains unverified.
 
 ## Design direction
 
@@ -105,4 +105,4 @@ No WalletConnect or separate mobile SDK is included. This keeps the mobile UI sc
 
 Use semantic headings, buttons and labels; visible focus; sufficient text contrast; meaningful loading and error text; and no automatic animation required for comprehension. Address text wraps on detail/review pages and has a copy button; abbreviate only in compact cards. Every validation error appears beside its field and is summarized above the submit action.
 
-Test text zoom at 200%, keyboard navigation, long labels, small balances, long decimal amounts, slow RPC responses, empty history and a displayed error with the mobile keyboard open. No actual screenshot is available until implementation.
+The local browser suite checks 360–390 CSS-pixel layouts and retains an invalid-amount screenshot. Real MetaMask mobile acceptance, 200% text zoom, keyboard navigation, slow RPC responses and long-content checks remain outstanding.
