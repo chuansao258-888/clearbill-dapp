@@ -14,7 +14,7 @@ function loadConfig() {
   const historyBlockSpan = Number(process.env.HISTORY_BLOCK_SPAN || 1000);
   if (!Number.isSafeInteger(chainId) || chainId < 1 || manifest.chainId !== chainId) throw new Error("Invalid chain ID or manifest chain");
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1) throw new Error("Invalid RPC timeout");
-  if (!Number.isSafeInteger(historyBlockSpan) || historyBlockSpan < 1 || historyBlockSpan > 1000) throw new Error("Invalid history block span");
+  if (!Number.isSafeInteger(historyBlockSpan) || historyBlockSpan < 1 || historyBlockSpan > 10000) throw new Error("Invalid history block span");
   if (!Number.isSafeInteger(manifest.deploymentBlock) || manifest.deploymentBlock < 0) throw new Error("Invalid deployment block");
   if (!/^0x[\da-fA-F]{64}$/.test(manifest.deploymentTransactionHash)) throw new Error("Invalid deployment transaction hash");
   const address = getAddress(manifest.contractAddress);

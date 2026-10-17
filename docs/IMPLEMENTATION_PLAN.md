@@ -141,7 +141,7 @@ Document exact invocation and prerequisites when the scripts exist. Do not claim
 | `CHAIN_ID` | Default 11155111; local 31337 | Startup and wallet network validation | No |
 | `DEPLOYMENT_FILE` | Required path | Select verified public manifest; local path under `.local` | No |
 | `RPC_TIMEOUT_MS` | Default 10000; positive integer | Bound read failures; timeout tests | No |
-| `HISTORY_BLOCK_SPAN` | Default 1000; 1–1000 | Bound each log query; empty-window/limit tests | No |
+| `HISTORY_BLOCK_SPAN` | Default 1000; 1–10000 | Bound each log query; reduce the span if the RPC provider rejects the range | No |
 
 No `PRIVATE_KEY`, database URL, JWT secret or administrator address is part of the server configuration. The local tooling may use the development chain's disposable unlocked accounts. Validate network/manifest consistency at startup. Keep secrets in `.env` locally and Render environment settings remotely. Public explorer mapping is fixed for supported networks, not user-provided input.
 
