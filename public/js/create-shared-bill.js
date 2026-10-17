@@ -1,7 +1,7 @@
 import { boot, review, localTime } from "./ui.js";
 import { parseAmount, eth, labelBytes } from "./amounts.js";
 import { sendOperation } from "./transactions.js";
-import { currentWallet } from "./wallet.js";
+import { currentWallet, requireWalletNetwork } from "./wallet.js";
 import { errorText, api } from "./api.js";
 
 const form = document.querySelector("#shared-form");
@@ -81,6 +81,7 @@ async function submit(event) {
     const account = await currentWallet();
     if (!account) throw new Error("Connect MetaMask before creating a shared bill.");
     const value = terms(account);
+    await requireWalletNetwork();
     const scope = `${config.chainId}:${config.shared.contractAddress}:${account.toLowerCase()}`;
     const signature = JSON.stringify({ scope, label: value.label, payers: value.payers, amounts: value.amounts.map(row => row.map(String)), due: value.due });
     const saved = JSON.parse(sessionStorage.getItem("clearbill-shared-draft") || "null");

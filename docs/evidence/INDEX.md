@@ -2,6 +2,10 @@
 
 ## Mobile wallet handoff update
 
+The student later reported that a payment confirmation inside mobile MetaMask did not show a transaction request, while desktop MetaMask did. Five browser regressions now cover wrong-network feedback, the explicit Sepolia switch, creation checks before contract reads, a pending-request error and a wallet request that never returns a hash. The full run passed 20 browser checks. These use simulated providers; the reported physical-phone payment issue is not yet confirmed resolved.
+
+During regression testing, a confirmed local payment could be followed by an older cached API snapshot that still showed Open. Disabling the backend provider's short request cache made the receipt-following bill read show the updated state, and the original one-payment browser check passed. This is a local-chain finding, separate from a mobile wallet approval result.
+
 On 17 October 2026, six frontend wallet checks and six browser checks passed for mobile detection, the official MetaMask app link, retained bill paths, clipboard failure and injected-wallet account access. The complete browser run passed 15 checks, including the existing nine local bill flows. The API and frontend runs passed 6 and 9 checks respectively.
 
 `mobile-wallet-handoff.png` shows the mobile connection panel at 390 CSS px with an iPhone Chrome user agent. This is a Chromium test with fixture API responses. Navigation to the official app-link URL was intercepted for the test; it does not prove that a physical phone opened MetaMask. The page provides a manual-copy fallback for browsers that block app opening.

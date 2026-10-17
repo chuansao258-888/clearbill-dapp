@@ -34,12 +34,16 @@ export async function checkTransaction(hash, progress, kind = "individual") {
 
 /** Reviews, signs, records and reconciles one contract write. */
 export async function sendOperation(config, method, args, value, progress, details, kind = "individual") {
-  progress("Waiting for MetaMask approval…");
+  document.querySelector("#page-status")?.scrollIntoView({ block: "center", behavior: "auto" });
   let submittedHash = null;
+  let walletTimer = null;
   try {
-    const { signer, contract } = await requireSigner(kind);
+    const { signer, contract } = await requireSigner(kind, progress);
     const account = await signer.getAddress();
+    progress("Preparing the transaction. Check MetaMask for the approval request…");
+    walletTimer = setTimeout(() => progress("MetaMask has not returned a transaction hash yet. Check its pending requests and network connection. Do not submit this action again while it is pending."), 15000);
     const tx = await contract[method](...args, { value });
+    clearTimeout(walletTimer);
     submittedHash = tx.hash;
     remember({ chainId: config.chainId, contractAddress: kind === "shared" ? config.shared.contractAddress : config.contractAddress, account, hash: tx.hash, method, details, submittedAt: Date.now() });
     progress(`Submitted ${tx.hash}. Waiting for a verified receipt…`);
@@ -51,5 +55,5 @@ export async function sendOperation(config, method, args, value, progress, detai
   } catch (error) {
     progress(submittedHash ? `Submitted ${submittedHash}. Status check failed: ${errorText(error)}. Do not resubmit automatically.` : errorText(error));
     throw error;
-  }
+  } finally { clearTimeout(walletTimer); }
 }

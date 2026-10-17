@@ -16,7 +16,8 @@ function createChain(config, provider = null) {
   if (!provider) {
     const request = new FetchRequest(config.rpcUrl);
     request.timeout = config.timeoutMs;
-    provider = new JsonRpcProvider(request, config.chainId, { staticNetwork: true });
+    // A read immediately after a receipt must not reuse a cached older block.
+    provider = new JsonRpcProvider(request, config.chainId, { staticNetwork: true, cacheTimeout: -1 });
   }
   const contract = new Contract(config.contractAddress, config.abi, provider);
   const iface = new Interface(config.abi);

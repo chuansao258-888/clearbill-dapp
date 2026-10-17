@@ -11,6 +11,7 @@ const history = document.querySelector("#bill-history");
 const more = document.querySelector("#history-more");
 const id = window.location.pathname.split("/").pop();
 let config, bill, account, cursor = null;
+let actionPending = false;
 
 /** Adds one read-only field to the bill summary. */
 function row(label, value, className = "") {
@@ -56,17 +57,23 @@ function renderActions() {
     actions.append(button);
   }
   note.textContent = actions.children.length ? "Check every address and amount before approving in MetaMask." : "There is no action available for this account and bill state.";
+  actions.querySelectorAll("button").forEach(button => { button.disabled = actionPending; });
 }
 
 /** Re-reads state, reviews exact terms and submits the requested contract method. */
 async function act(method, title, args, value, lines) {
+  if (actionPending) return;
+  actionPending = true;
+  actions.querySelectorAll("button").forEach(button => { button.disabled = true; });
   try {
+    status.textContent = "Checking the latest bill state…";
     const fresh = (await api(`/bills/${id}`)).bill;
     if (fresh.status !== bill.status || fresh.paidAmountWei !== bill.paidAmountWei) { bill = fresh; renderBill(); renderActions(); throw new Error("The bill changed. Review the updated terms before trying again."); }
     if (!await review(title, lines, method === "refundBill" ? "Fund refund" : "Confirm")) return;
     const result = await sendOperation(config, method, args, value, text => { status.textContent = text; }, { billId: id });
     if (result.state === "confirmed") await loadBill();
   } catch (error) { status.textContent = errorText(error); }
+  finally { actionPending = false; if (bill) renderActions(); }
 }
 
 /** Loads the current bill and resets its receipt timeline. */

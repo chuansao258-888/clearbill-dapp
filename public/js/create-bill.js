@@ -1,7 +1,7 @@
 import { boot, review, localTime } from "./ui.js";
 import { parseAmount, eth, labelBytes } from "./amounts.js";
 import { sendOperation } from "./transactions.js";
-import { currentWallet } from "./wallet.js";
+import { currentWallet, requireWalletNetwork } from "./wallet.js";
 import { errorText, api } from "./api.js";
 
 const form = document.querySelector("#bill-form");
@@ -74,6 +74,7 @@ async function submit(event) {
     const account = await currentWallet();
     if (!account) throw new Error("Connect MetaMask before creating a bill.");
     const intended = terms(account);
+    await requireWalletNetwork();
     const scope = `${config.chainId}:${config.contractAddress}:${account.toLowerCase()}`;
     const saved = JSON.parse(sessionStorage.getItem("clearbill-draft") || "null");
     const signature = JSON.stringify({ scope, payer: intended.payer, label: intended.label, count: intended.count, amounts: intended.amounts.map(String), due: intended.due });

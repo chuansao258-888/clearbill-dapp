@@ -56,6 +56,8 @@ The mobile pages are Overview, Bills, one-to-one creation and detail, shared cre
 
 On iPhone or Android, tap **Connect wallet** or **Open MetaMask** to open the current HTTPS page in MetaMask's browser. Tap **Connect wallet** again inside MetaMask and select the intended Sepolia account. Each installment still requires a separate approval.
 
+The page checks the wallet's actual chain. If it differs from Sepolia, the account button becomes **Switch to Sepolia**. Approve that network change before creating or paying a bill. Payment confirmation brings the transaction status into view. A pending wallet request stays visible and does not trigger automatic resubmission.
+
 If the browser blocks the app link, tap **Copy page link**, open MetaMask's browser and paste the address. If clipboard access is blocked, the page displays the address for manual copying. Desktop MetaMask and the MetaMask in-app browser use the injected wallet directly. App handoff depends on the browser and operating system; automatic opening in every browser is not guaranteed. The implementation follows the [official MetaMask dapp-link format](https://docs.metamask.io/metamask-connect/evm/guides/metamask-exclusive/use-deeplinks/).
 
 The API is under `/api/v1`. It exposes health and public configuration, block snapshots, bill and account lists, bill history, and verified transaction status. Shared-bill routes use `/shared-bills`, `/accounts/:address/shared-bills` and `/shared-transactions`. There are no payment or signing POST endpoints. See the [API design](docs/API_DESIGN.md) for schemas, pagination and errors.
@@ -101,9 +103,11 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-The latest full browser run passed 15 tests: 9 local bill-flow checks and 6 mobile-wallet checks. The bill-flow wallet is simulated; it does not prove real MetaMask compatibility. The [evidence index](docs/evidence/INDEX.md) distinguishes local screenshots, Sepolia transactions and hosted read-only screenshots. It also links the public deployment and payment receipts.
+The latest full browser run passed 20 tests: 9 local bill-flow checks, 6 mobile-wallet checks and 5 network/pending-request checks. The bill-flow wallet is simulated; it does not prove real MetaMask compatibility. The [evidence index](docs/evidence/INDEX.md) distinguishes local screenshots, Sepolia transactions and hosted read-only screenshots. It also links the public deployment and payment receipts.
 
 Six additional browser checks passed for the mobile handoff controls, copy fallback and injected-wallet connection. These use Chromium with iPhone/Android user agents and mock API responses; they do not verify an installed phone app or every browser engine. Run them independently without a local blockchain using `npx playwright test wallet-mobile.spec.js`.
+
+The five checks in `wallet-network.spec.js` cover network switching, creation preflight, visible payment errors and unresolved wallet requests. A payment request is never automatically resent. The backend also avoids reusing an older cached block immediately after confirmation.
 
 Both contracts have verified Sepolia deployment receipts and matching runtime code. A real one-to-one bill was created and paid through the local web interface with Chrome MetaMask. A two-payer shared bill was created and paid in four installments on Sepolia using authorized test wallets through a CLI script. The hosted shared-bill API and read-only mobile page were checked against that chain state. Shared-bill signing through real MetaMask and use inside a phone wallet have not been verified.
 

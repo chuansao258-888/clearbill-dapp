@@ -70,6 +70,7 @@ test("MetaMask's mobile browser requests accounts without another app redirect",
       on: () => {},
       request: async ({ method }) => {
         if (method === "eth_accounts") return window.connected ? [address] : [];
+        if (method === "eth_chainId") return "0xaa36a7";
         if (method === "eth_requestAccounts") { window.connected = true; return [address]; }
         throw new Error(`Unexpected request: ${method}`);
       }

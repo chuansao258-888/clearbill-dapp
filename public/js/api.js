@@ -31,5 +31,6 @@ export async function allBills(address, role, snapshot, onPage = () => {}) {
 /** Formats a chain or API failure for a visible, non-sensitive message. */
 export function errorText(error) {
   if (error?.code === 4001 || error?.code === "ACTION_REJECTED") return "The wallet request was rejected. No payment was submitted.";
+  if ([error?.code, error?.error?.code, error?.info?.error?.code].some(code => Number(code) === -32002)) return "A MetaMask request is already pending. Open MetaMask and complete or reject that request before trying again.";
   return error?.shortMessage || error?.message || "The request could not be completed.";
 }

@@ -42,13 +42,34 @@ export async function connectWallet() {
   return accounts[0];
 }
 
-/** Verifies the selected chain immediately before a financial action. */
-export async function requireSigner(kind = "individual") {
+/** Rejects the wrong wallet network before contract reads or signing. */
+export async function requireWalletNetwork() {
   if (!configCache) throw new Error("The contract is not configured.");
   const injected = injectedWallet();
   if (!injected) throw new Error("Open this page in MetaMask to sign a transaction.");
   const network = await injected.request({ method: "eth_chainId" });
-  if (BigInt(network) !== BigInt(configCache.chainId)) throw new Error(`Switch MetaMask to ${configCache.chainName}.`);
+  if (BigInt(network) !== BigInt(configCache.chainId)) throw new Error(`Switch MetaMask to ${configCache.chainName} using the wallet button at the top, then try again.`);
+  return injected;
+}
+
+/** Requests a network change without creating or resending a transaction. */
+export async function switchWalletNetwork() {
+  if (!configCache) throw new Error("The contract is not configured.");
+  const injected = injectedWallet();
+  if (!injected) throw new Error("Open this page in MetaMask to switch networks.");
+  try {
+    await injected.request({ method: "wallet_switchEthereumChain", params: [{ chainId: `0x${BigInt(configCache.chainId).toString(16)}` }] });
+  } catch (error) {
+    if (Number(error.code) === 4902) throw new Error(`Enable ${configCache.chainName} in MetaMask's network settings, then try again.`);
+    throw error;
+  }
+}
+
+/** Checks the network and obtains the account used for a financial action. */
+export async function requireSigner(kind = "individual", progress = () => {}) {
+  progress("Checking the MetaMask network…");
+  const injected = await requireWalletNetwork();
+  progress("Checking the connected MetaMask account…");
   const provider = new BrowserProvider(injected);
   const signer = await provider.getSigner();
   const target = kind === "shared" ? configCache.shared : configCache;
@@ -98,23 +119,30 @@ export function mountWalletControl(onChange = () => {}) {
   const note = document.querySelector("#wallet-note");
   if (!button) return;
   const help = mobileWalletHelp(note);
+  let wrongNetwork = false;
   const refresh = async () => {
     try {
       const account = await currentWallet();
-      button.textContent = account ? `${account.slice(0, 6)}…${account.slice(-4)}` : "Connect wallet";
+      const chainId = account ? BigInt(await injectedWallet().request({ method: "eth_chainId" })) : null;
+      wrongNetwork = chainId !== null && configCache && chainId !== BigInt(configCache.chainId);
+      button.textContent = wrongNetwork ? `Switch to ${configCache.chainName}` : account ? `${account.slice(0, 6)}…${account.slice(-4)}` : "Connect wallet";
       const onBillDetail = /^\/(bills|shared-bills)\/\d+$/.test(window.location.pathname);
       if (help) help.hidden = Boolean(injectedWallet());
       if (note) note.textContent = account ? "Wallet connected" : help && !help.hidden ? "Connect wallet opens this page in MetaMask." : onBillDetail ? "Connect to manage this bill." : "Connect to view your bills";
+      if (note && wrongNetwork) note.textContent = `Wallet connected to ${chainId === 1n ? "Ethereum Mainnet" : `chain ${chainId}`}. Switch to ${configCache.chainName} before creating or paying a bill.`;
       onChange(account);
     } catch (error) { if (note) note.textContent = error.message; }
   };
   button.addEventListener("click", async () => {
+    button.disabled = true;
     try {
+      if (wrongNetwork) { await switchWalletNetwork(); await refresh(); return; }
       const account = await connectWallet();
       if (account) await refresh();
       else if (note) note.textContent = "Opening MetaMask. If it does not open, use the options below.";
     }
     catch (error) { if (note) note.textContent = error.message; }
+    finally { button.disabled = false; }
   });
   injectedWallet()?.on("accountsChanged", refresh);
   injectedWallet()?.on("chainChanged", () => { onChange(null); window.location.reload(); });

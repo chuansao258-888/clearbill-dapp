@@ -97,6 +97,10 @@ On account or chain change, clear outdated actions and loaded account data, dism
 
 ## Wallet support boundary
 
+The connected-wallet note shows a wrong network explicitly. The header then provides a Switch to Sepolia action using `wallet_switchEthereumChain`. This only requests a network change. Creation verifies the wallet chain before looking up a previous creation reference. Financial actions check it again before obtaining a signer.
+
+After payment confirmation, scroll the status panel into view and disable the one-to-one action while it is pending. Show whether the page is checking the network, checking the account or preparing the transaction. If the wallet has not returned a hash after 15 seconds, explain that its request is still unresolved; do not automatically retry or mark it failed. Map the wallet's already-pending error to a readable instruction.
+
 Desktop MetaMask and the MetaMask mobile in-app browser use an injected provider. An iPhone or Android browser without that provider sends the current HTTPS page to `https://link.metamask.io/dapp/{dappUrl}` after a user click. A visible Open MetaMask link provides the same handoff. Opening the app does not count as a connected wallet; the user connects again inside MetaMask before approving any transaction.
 
 The mobile help panel also has Copy page link. If the operating system or browser blocks app opening, the user can paste that link into MetaMask's browser. Clipboard failure leaves a readable address for manual copying. HTTP development URLs show an instruction to use the public HTTPS site. No claim is made that every browser permits automatic app handoff.
