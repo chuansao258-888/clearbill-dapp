@@ -1,64 +1,125 @@
 # ClearBill
 
-ClearBill is a mobile web DApp for issuing one-to-one or shared bills in Sepolia test ETH. A one-to-one bill has one payer and one or two installments. A shared bill assigns fixed one- or two-installment shares to two or three payers. Each payer approves their own payment; the contract records and immediately forwards it to the payee. Unpaid bills can be cancelled, and the payee can fund a full refund of payments already received.
+ClearBill is a mobile-first financial DApp for settling payment requests in Ethereum Sepolia test ETH. A payee can issue a one-to-one bill or split one bill between two or three named payer wallets. Each payer approves their own fixed installment in MetaMask. The smart contract checks the sender, installment order and exact amount, records the result on-chain, and forwards each successful payment to the payee immediately.
 
-## Live deployment
+The application is intended for small shared expenses and freelance payment requests. A bill is a public request, not proof that the payer accepted a debt or that goods or services were delivered. ClearBill uses test ETH only.
 
-Render URL: [https://clearbill-dapp.onrender.com/](https://clearbill-dapp.onrender.com/). Connect MetaMask on Ethereum Sepolia to create or pay a test bill.
+## Live application
 
-## Current status
+- **Web app:** [https://clearbill-dapp.onrender.com/](https://clearbill-dapp.onrender.com/)
+- **Network:** Ethereum Sepolia (chain ID `11155111`)
+- **One-to-one contract:** [`0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`](https://eth-sepolia.blockscout.com/address/0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa)
+- **Shared-bill contract:** [`0x67c95470dd748E2Fb042f1b07df247610C6A75BC`](https://eth-sepolia.blockscout.com/address/0x67c95470dd748E2Fb042f1b07df247610C6A75BC)
 
-The one-to-one and shared Solidity contracts are deployed and independently bytecode-verified on Sepolia. The Express API and mobile web pages are live at [clearbill-dapp.onrender.com](https://clearbill-dapp.onrender.com/) on a free Render web service. Hosted shared-bill API and read-only mobile pages have been checked against real Sepolia state. A real Sepolia shared bill reached Paid after four CLI-signed installment transactions from two authorized test wallets. Automated checks cover contract, API and simulated-wallet browser flows. Earlier Chrome MetaMask tests created and paid a one-to-one bill through the local web interface; shared-bill use through real MetaMask and phone-wallet use remain unverified.
+The contracts have separate ledgers and bill IDs. A link under `/bills/:id` always refers to the one-to-one contract; `/shared-bills/:id` refers to the shared contract. Public deployment manifests are in [`deployment/`](deployment/).
 
-## Requirements
+## What ClearBill does
 
-- Node.js 24 and npm 11 were used for the current local checks.
-- A browser with MetaMask is required for manual transactions. MetaMask's in-app browser is the planned phone environment; ordinary phone browsers without an injected wallet can read public pages.
-- Test ETH only. Hardhat's printed local development keys are public and must never hold real assets.
+| Capability | One-to-one bill | Shared bill |
+| --- | --- | --- |
+| Payers | One specified wallet | Two or three distinct specified wallets |
+| Schedule | One payment or deposit and balance | One or two fixed installments per payer |
+| Creation | Payee signs once | Payee signs once |
+| Payment | Payer signs each installment | Each payer signs their own installments |
+| Settlement | Each payment reaches the payee immediately | Each payment reaches the payee immediately |
+| Cancellation | Payee can cancel before any payment | Payee can cancel before any payment |
+| Refund | Payee funds a full refund of paid principal | Payee funds one atomic refund to every payer who has paid |
 
-## Local setup
+Terms are immutable after creation. Due dates identify overdue installments but do not trigger automatic transfers or prevent late payment. A refund closes any unpaid remainder. Previous gas fees are not returned. Bill labels, addresses, schedules, amounts and transaction history are public on Sepolia.
+
+### Contract interface
+
+| Method | Purpose |
+| --- | --- |
+| `createBill(...)` / `createSharedBill(...)` | Validate and store fixed terms; index the bill for the payee and payer wallets. |
+| `payInstallment(billId, expectedInstallment)` | Accept only the authorized payer's exact next amount, update progress and forward ETH. |
+| `cancelBill(billId)` | Let the payee close a bill only while no payment has been made. |
+| `refundBill(billId, expectedPaidAmount)` | Let the payee fund an exact refund of all principal received so far. |
+| `getBill`, `getPaymentQuote`, `getAccountBillCount`, `getAccountBillIds`, `getBillIdByReference` | Read terms, progress and account indexes; recover a creation by its reference. |
+
+Both contracts emit creation, payment, cancellation and refund events. Their statuses are `Open`, `PartiallyPaid`, `Paid`, `Cancelled` and `Refunded`. The shared contract tracks progress separately for each payer and emits one refund event per refunded payer. Source files are [`contracts/ClearBill.sol`](contracts/ClearBill.sol) and [`contracts/SharedBill.sol`](contracts/SharedBill.sol); matching JSON interfaces are [`abi/ClearBill.abi.json`](abi/ClearBill.abi.json) and [`abi/SharedBill.abi.json`](abi/SharedBill.abi.json). See the [one-to-one contract design](docs/SMART_CONTRACT_DESIGN.md) and [shared-bill design](docs/SHARED_BILL_DESIGN.md) for validation rules and limitations.
+
+## Architecture
+
+ClearBill uses Solidity 0.8.28, HTML, CSS, JavaScript, MetaMask, ethers.js and a Node.js/Express backend. Hardhat compiles and tests the contracts. Render hosts the static pages and read-only API together. No database, server wallet, scheduler or background payment service is used; the blockchain is the source of truth.
+
+```text
+Browser pages -- public reads --> Express API -- read-only RPC --> Sepolia contracts
+Browser pages -- wallet request --> MetaMask -- signed transaction --> Sepolia contracts
+```
+
+MetaMask holds the user's keys and signs writes. The backend validates HTTP inputs, checks deployment receipts and runtime code, reads contract state and events, and verifies transaction receipts. It never receives a seed phrase or private key. A submitted transaction hash is shown as pending until a successful receipt and matching contract event are found. Refreshing a page reconstructs confirmed state from the chain.
+
+The mobile pages are Overview, Bills, one-to-one creation and detail, shared creation and detail, and Activity. The Bills page switches between contract ledgers and payer/payee views. Each shared bill has its own receipt timeline. Overview totals and the account-wide Activity/CSV view currently cover one-to-one bills only; they should not be read as totals for both ledgers.
+
+The API is under `/api/v1`. It exposes health and public configuration, block snapshots, bill and account lists, bill history, and verified transaction status. Shared-bill routes use `/shared-bills`, `/accounts/:address/shared-bills` and `/shared-transactions`. There are no payment or signing POST endpoints. See the [API design](docs/API_DESIGN.md) for schemas, pagination and errors.
+
+## Run locally
+
+Node.js 24 and npm 11 were used for the recorded checks. Install dependencies and compile both contracts:
 
 ```powershell
 npm ci
 npm run build
 Copy-Item .env.example .env
+```
+
+Start a disposable Hardhat chain in one terminal:
+
+```powershell
 npm run chain
 ```
 
-Leave the chain terminal running. In a second terminal:
+In another terminal, deploy both contracts and start the web server:
 
 ```powershell
 npm run deploy:local
 npm start
 ```
 
-Open `http://127.0.0.1:3000`. For MetaMask manual testing, add a local network with RPC `http://127.0.0.1:8545`, chain ID `31337` and currency `ETH`. Use only disposable local-chain accounts. The local manifests are written to ignored `.local/deployment.json` and `.local/shared-deployment.json` and are invalid after the chain resets. Set `SHARED_DEPLOYMENT_FILE=.local/shared-deployment.json` in `.env` to enable the local shared ledger. Restarting the chain requires new deployments and a fresh browser context.
+Open [http://127.0.0.1:3000/](http://127.0.0.1:3000/). The default `.env.example` selects the local chain (`31337`) and both manifests written under ignored `.local/`. For a manual wallet test, add a MetaMask network with RPC `http://127.0.0.1:8545`, chain ID `31337` and currency `ETH`, then use only disposable local-chain accounts. Restarting Hardhat clears its ledger; deploy again before restarting the server. Never use the printed Hardhat keys with real assets.
 
-The server needs only a read-only RPC URL and public deployment metadata. It must never receive wallet private keys or seed phrases. Copy `.env.example` as a local file and supply real values only there or in hosting environment settings.
+For Sepolia, set `RPC_URL` to a Sepolia RPC endpoint, `CHAIN_ID=11155111` and `DEPLOYMENT_FILE=deployment/sepolia.json`. The server selects `deployment/shared-sepolia.json` by default on Sepolia; `SHARED_DEPLOYMENT_FILE` can override it. Do not place RPC credentials, wallet keys or seed phrases in Git. The backend checks the chain ID, creation receipts and exact deployed runtime bytecode before it starts. The [deployment guide](docs/DEPLOYMENT.md) records the live deployments and hosting configuration.
 
-## Verification
+## Test and inspect
 
 ```powershell
 npm test
+npm run verify:deployment
+```
+
+`npm test` runs contract, API and frontend amount-validation checks. The last recorded run passed 19 contract tests, 6 API tests and 3 frontend tests. With the local chain, both deployments and server running, install Playwright's Chromium once and run the mobile-width browser suite:
+
+```powershell
+npx playwright install chromium
 npm run test:browser
 ```
 
-`npm test` runs isolated contract, API and amount tests. The browser suite requires the local chain, deployed contract and server from the setup above. It creates its own local bills, and its injected wallet is a simulation; its success does not establish real MetaMask compatibility. The selected screenshots in `docs/evidence/` are labelled accordingly.
+The last recorded browser run passed 9 tests, including local creation, payment and refund flows. Its injected wallet is simulated; it does not prove real MetaMask compatibility. The [evidence index](docs/evidence/INDEX.md) distinguishes local screenshots, Sepolia transactions and hosted read-only screenshots. It also links the public deployment and payment receipts.
 
-`npm run verify:deployment` checks configured manifests against their chain receipts and code. It requires `RPC_URL` and `DEPLOYMENT_FILE`; `SHARED_DEPLOYMENT_FILE` is optional for local networks. The verified Sepolia manifests are in `deployment/sepolia.json` and `deployment/shared-sepolia.json`. Set `CHAIN_ID=11155111` and a Sepolia `RPC_URL` for the server. The shared manifest is selected by default on Sepolia. Actual deployment and remaining acceptance steps are in [Deployment](docs/DEPLOYMENT.md).
+Both contracts have verified Sepolia deployment receipts and matching runtime code. A real one-to-one bill was created and paid through the local web interface with Chrome MetaMask. A two-payer shared bill was created and paid in four installments on Sepolia using authorized test wallets through a CLI script. The hosted shared-bill API and read-only mobile page were checked against that chain state. Shared-bill signing through real MetaMask and use inside a phone wallet have not been verified.
 
-The optional `npm run serve:deployer` tool can deploy a future instance using MetaMask without exposing a key to the server. A second deployment would create a separate ledger and must not silently replace the verified manifest.
+## Security and limits
 
-## Product behavior
+- Contract authorization depends on the sending wallet address. Connecting a wallet does not verify a person's identity or establish a legal debt.
+- The contracts check exact wei amounts, installment order and bill status. State changes precede external transfers, and write methods use a reentrancy guard. This project has not received an independent security audit.
+- Successful payments are forwarded immediately; the contracts do not hold a reserve for refunds. The payee must supply the entire paid principal plus gas to refund a bill. A recipient that rejects ETH can cause a payment or atomic refund to revert.
+- On-chain labels and wallet addresses are public. Use neutral labels and test accounts; do not enter personal or confidential invoice details.
+- The site depends on its configured RPC provider for reads. A recent confirmation can still be affected by a chain reorganization, and a contract deployment cannot be undone by changing the website.
 
-- The bill creator is the payee. Payer addresses, amounts, public label and deadlines are immutable.
-- One-to-one bills have one payer; shared bills have two or three distinct payers. Each payer has one or two exact installments. A payer may pay late; the next unpaid due date drives the overdue badge. Deadlines never cause automatic wallet payments.
-- A bill with no payments can be cancelled by its creator. A partially or fully paid bill can be refunded in full by the creator, using new ETH from that wallet. Refund closes any remaining installment.
-- Blockchain receipts, contract state and events are authoritative. A submitted hash alone is not shown as a successful payment. Shared-bill history appears on each shared detail page; the account Activity page currently covers the original one-to-one ledger.
-- Bill labels, addresses and amounts are public. A payment request does not prove a legal debt or completed work.
+Further details are in the [architecture](docs/ARCHITECTURE.md), [security design](docs/SECURITY.md), [data design](docs/DATA_DESIGN.md) and [test plan](docs/TEST_PLAN.md).
 
-## Documentation and submission
+## Repository and submission
 
-Start with [Product requirements](docs/PRD.md), [Smart contract design](docs/SMART_CONTRACT_DESIGN.md), [Shared-bill design](docs/SHARED_BILL_DESIGN.md), [API design](docs/API_DESIGN.md), [Data design](docs/DATA_DESIGN.md), [Mobile interface design](docs/MOBILE_UI_DESIGN.md) and [Implementation plan](docs/IMPLEMENTATION_PLAN.md). [Progress](docs/PROGRESS.md) records actual verification. The course brief is local and excluded from Git.
+```text
+abi/          Generated JSON interfaces for the two business contracts
+contracts/    Solidity business contracts and test receivers
+deployment/   Public Sepolia deployment manifests
+public/       Mobile HTML, CSS and JavaScript pages
+server/       Express API, chain reads and receipt verification
+scripts/      Build, local deployment and deployment checks
+tests/        Contract, API, frontend and browser checks
+docs/         Design notes and selected evidence screenshots
+```
 
-This repository contains the source, both `.sol` contracts, their generated JSON ABIs in `abi/`, the Node.js backend, mobile pages, setup instructions and selected test screenshots. The deployed Render link is above. The required 5–8 page PDF report is managed separately and excluded from Git. The application does not use a database, and the assignment does not require a video.
+This repository includes the source, ABIs, public deployment information, README and selected screenshots. The required 5-8 page PDF report is written and submitted separately; it is intentionally excluded from Git. A database is not needed for this implementation, and no video recording is required.
