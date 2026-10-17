@@ -2,6 +2,10 @@
 
 ClearBill is a mobile web DApp for issuing one-to-one or shared bills in Sepolia test ETH. A one-to-one bill has one payer and one or two installments. A shared bill assigns fixed one- or two-installment shares to two or three payers. Each payer approves their own payment; the contract records and immediately forwards it to the payee. Unpaid bills can be cancelled, and the payee can fund a full refund of payments already received.
 
+## Live deployment
+
+Render URL: [https://clearbill-dapp.onrender.com/](https://clearbill-dapp.onrender.com/). Connect MetaMask on Ethereum Sepolia to create or pay a test bill.
+
 ## Current status
 
 The one-to-one and shared Solidity contracts are deployed and independently bytecode-verified on Sepolia. The Express API and mobile web pages are live at [clearbill-dapp.onrender.com](https://clearbill-dapp.onrender.com/) on a free Render web service. Hosted shared-bill API and read-only mobile pages have been checked against real Sepolia state. A real Sepolia shared bill reached Paid after four CLI-signed installment transactions from two authorized test wallets. Automated checks cover contract, API and simulated-wallet browser flows. Earlier Chrome MetaMask tests created and paid a one-to-one bill through the local web interface; shared-bill use through real MetaMask and phone-wallet use remain unverified.
