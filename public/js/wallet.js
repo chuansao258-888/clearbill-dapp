@@ -7,6 +7,19 @@ export function setWalletConfig(config) { configCache = config; }
 /** Returns the injected MetaMask provider when available. */
 export function injectedWallet() { return window.ethereum?.isMetaMask ? window.ethereum : null; }
 
+/** Detects phone and tablet browsers that may need to open the wallet app. */
+export function isMobileBrowser() {
+  const { userAgent = "", platform = "", maxTouchPoints = 0 } = window.navigator;
+  return /Android|iPhone|iPad|iPod/i.test(userAgent) || (platform === "MacIntel" && maxTouchPoints > 1);
+}
+
+/** Builds the official MetaMask app link for the current public HTTPS page. */
+export function mobileWalletLink() {
+  const page = new URL(window.location.href);
+  if (page.protocol !== "https:") throw new Error("Open the public HTTPS website to use MetaMask on your phone.");
+  return `https://link.metamask.io/dapp/${page.host}${page.pathname}${page.search}${page.hash}`;
+}
+
 /** Reads an already exposed wallet without opening a permission prompt. */
 export async function currentWallet() {
   const injected = injectedWallet();
@@ -19,7 +32,11 @@ export async function currentWallet() {
 /** Requests account access from MetaMask after a direct user action. */
 export async function connectWallet() {
   const injected = injectedWallet();
-  if (!injected) throw new Error("Open this page in MetaMask to connect your wallet.");
+  if (!injected) {
+    if (!isMobileBrowser()) throw new Error("Install the MetaMask browser extension, then reload this page.");
+    window.location.assign(mobileWalletLink());
+    return null;
+  }
   const accounts = await injected.request({ method: "eth_requestAccounts" });
   if (!accounts.length) throw new Error("No wallet account was selected.");
   return accounts[0];
@@ -39,22 +56,64 @@ export async function requireSigner(kind = "individual") {
   return { signer, contract: new Contract(target.contractAddress, target.abi, signer) };
 }
 
+/** Provides an app link and a copy fallback when a mobile browser has no wallet. */
+function mobileWalletHelp(note) {
+  if (!note || !isMobileBrowser() || injectedWallet()) return null;
+  const help = document.createElement("div");
+  help.id = "wallet-help";
+  help.className = "panel";
+  const instructions = document.createElement("p");
+  instructions.textContent = "Open this page in MetaMask, then tap Connect wallet there. If your browser blocks the app link, copy the page link and paste it into MetaMask's browser.";
+  const actions = document.createElement("div");
+  actions.className = "actions";
+  const open = document.createElement("a");
+  open.className = "button primary";
+  open.textContent = "Open MetaMask";
+  try { open.href = mobileWalletLink(); }
+  catch (error) { instructions.textContent = error.message; open.hidden = true; }
+  const copy = document.createElement("button");
+  copy.type = "button";
+  copy.textContent = "Copy page link";
+  const status = document.createElement("p");
+  status.className = "muted";
+  status.setAttribute("role", "status");
+  status.setAttribute("aria-live", "polite");
+  copy.addEventListener("click", async () => {
+    try {
+      await window.navigator.clipboard.writeText(window.location.href);
+      status.textContent = "Page link copied. Paste it into MetaMask's browser.";
+    } catch {
+      status.textContent = `Copy this address manually: ${window.location.href}`;
+    }
+  });
+  actions.append(open, copy);
+  help.append(instructions, actions, status);
+  note.after(help);
+  return help;
+}
+
 /** Updates the shared account control and refreshes data after wallet changes. */
 export function mountWalletControl(onChange = () => {}) {
   const button = document.querySelector("#wallet-button");
   const note = document.querySelector("#wallet-note");
   if (!button) return;
+  const help = mobileWalletHelp(note);
   const refresh = async () => {
     try {
       const account = await currentWallet();
       button.textContent = account ? `${account.slice(0, 6)}…${account.slice(-4)}` : "Connect wallet";
       const onBillDetail = /^\/(bills|shared-bills)\/\d+$/.test(window.location.pathname);
-      if (note) note.textContent = account ? "Wallet connected" : onBillDetail ? "Connect to manage this bill." : "Connect to view your bills";
+      if (help) help.hidden = Boolean(injectedWallet());
+      if (note) note.textContent = account ? "Wallet connected" : help && !help.hidden ? "Connect wallet opens this page in MetaMask." : onBillDetail ? "Connect to manage this bill." : "Connect to view your bills";
       onChange(account);
     } catch (error) { if (note) note.textContent = error.message; }
   };
   button.addEventListener("click", async () => {
-    try { await connectWallet(); await refresh(); }
+    try {
+      const account = await connectWallet();
+      if (account) await refresh();
+      else if (note) note.textContent = "Opening MetaMask. If it does not open, use the options below.";
+    }
     catch (error) { if (note) note.textContent = error.message; }
   });
   injectedWallet()?.on("accountsChanged", refresh);

@@ -1,5 +1,11 @@
 # ClearBill Evidence Index
 
+## Mobile wallet handoff update
+
+On 17 October 2026, six frontend wallet checks and six browser checks passed for mobile detection, the official MetaMask app link, retained bill paths, clipboard failure and injected-wallet account access. The complete browser run passed 15 checks, including the existing nine local bill flows. The API and frontend runs passed 6 and 9 checks respectively.
+
+`mobile-wallet-handoff.png` shows the mobile connection panel at 390 CSS px with an iPhone Chrome user agent. This is a Chromium test with fixture API responses. Navigation to the official app-link URL was intercepted for the test; it does not prove that a physical phone opened MetaMask. Real device acceptance remains open. The page provides a manual-copy fallback for browsers that block app opening.
+
 The entries below are local development evidence from 16 October 2026 (Asia/Singapore). The browser suite used a simulated injected wallet connected to a disposable Hardhat chain (chain ID 31337). These images are not real MetaMask or Sepolia screenshots. Re-running the browser suite creates new local bills; the screenshot records the state observed during its run.
 
 | Evidence | Test and environment | Actual observation | File |

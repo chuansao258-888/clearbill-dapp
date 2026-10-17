@@ -97,7 +97,9 @@ On account or chain change, clear outdated actions and loaded account data, dism
 
 ## Wallet support boundary
 
-The first release targets a desktop browser with MetaMask and the MetaMask mobile in-app browser using an injected provider. A normal mobile browser without a provider may read public bill details and must show instructions to open the site in MetaMask for transactions. It must not show a broken Connect button or claim universal mobile wallet support.
+Desktop MetaMask and the MetaMask mobile in-app browser use an injected provider. An iPhone or Android browser without that provider sends the current HTTPS page to `https://link.metamask.io/dapp/{dappUrl}` after a user click. A visible Open MetaMask link provides the same handoff. Opening the app does not count as a connected wallet; the user connects again inside MetaMask before approving any transaction.
+
+The mobile help panel also has Copy page link. If the operating system or browser blocks app opening, the user can paste that link into MetaMask's browser. Clipboard failure leaves a readable address for manual copying. HTTP development URLs show an instruction to use the public HTTPS site. No claim is made that every browser permits automatic app handoff.
 
 No WalletConnect or separate mobile SDK is included. This keeps the mobile UI scope achievable while requiring actual MetaMask mobile-browser acceptance testing. Verify account exposure/change handling against the installed wallet and official [MetaMask account guidance](https://docs.metamask.io/metamask-connect/evm/guides/manage-user-accounts/).
 
@@ -105,4 +107,4 @@ No WalletConnect or separate mobile SDK is included. This keeps the mobile UI sc
 
 Use semantic headings, buttons and labels; visible focus; sufficient text contrast; meaningful loading and error text; and no automatic animation required for comprehension. Address text wraps on detail/review pages and has a copy button; abbreviate only in compact cards. Every validation error appears beside its field and is summarized above the submit action.
 
-The local browser suite checks 360–390 CSS-pixel layouts and retains an invalid-amount screenshot. Real MetaMask mobile acceptance, 200% text zoom, keyboard navigation, slow RPC responses and long-content checks remain outstanding.
+The local browser suite checks 360–390 CSS-pixel layouts and retains an invalid-amount screenshot. Six additional Chromium checks use iPhone Chrome, Android Chrome and Android Firefox user agents to verify the handoff destination, copy controls, blocked clipboard fallback and injected-wallet connection. These emulate browser conditions; real MetaMask mobile acceptance, other browser engines, 200% text zoom, keyboard navigation, slow RPC responses and long-content checks remain outstanding.
