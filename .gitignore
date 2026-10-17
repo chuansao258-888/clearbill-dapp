@@ -1,6 +1,8 @@
 # Course materials
 /docs/SC6113 Individual Assignment.docx
 /course-materials/
+*.docx
+*.pdf
 
 # Dependencies and generated files
 node_modules/
@@ -15,14 +17,23 @@ dist/
 tmp/
 *.log
 *.zip
+/submission/
 
 # Credentials and local configuration
 .env
 .env.*
+*.env
+*.env.*
 !.env.example
 *.pem
 *.key
 *.keystore
+*.p12
+*.pfx
+*.seed
+*.mnemonic
+/secrets/
+/credentials/
 
 # Editor and local workflow state
 .idea/

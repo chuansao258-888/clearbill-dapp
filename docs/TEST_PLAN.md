@@ -1,6 +1,6 @@
 # ClearBill Test and Evidence Plan
 
-Status: local contract, API, amount and browser checks run; the Sepolia contract deployment is verified. Real MetaMask and Sepolia business-flow cases remain pending. Actual results are in `PROGRESS.md` and `evidence/INDEX.md`.
+Status: local contract, API, amount and browser checks passed. The Sepolia deployment, CLI-signed business flows and a Chrome MetaMask create/pay flow are verified. Phone-wallet testing remains open. Results are in `PROGRESS.md` and `evidence/INDEX.md`.
 
 ## Test levels
 

@@ -4,7 +4,7 @@ ClearBill is a mobile web DApp for freelancers to issue a one-payment or deposit
 
 ## Current status
 
-The Solidity contract, Express read API and five mobile pages run locally. Local automated checks cover the core create, pay, cancel and refund rules. Browser checks use simulated injected wallets backed by an isolated Hardhat chain. The contract is also deployed and bytecode-verified on Sepolia; real MetaMask business actions, mobile wallet acceptance and Render deployment have not been completed.
+The Solidity contract, Express read API and five mobile pages run locally. Automated checks cover the core create, pay, cancel and refund rules on Hardhat. The contract is deployed and bytecode-verified on Sepolia. A Chrome MetaMask test created and paid a bill through the web interface. Phone-wallet testing and public hosting remain open.
 
 ## Requirements
 
@@ -57,4 +57,4 @@ The optional `npm run serve:deployer` tool can deploy a future instance using Me
 
 Start with [Product requirements](docs/PRD.md), [Smart contract design](docs/SMART_CONTRACT_DESIGN.md), [API design](docs/API_DESIGN.md), [Data design](docs/DATA_DESIGN.md), [Mobile interface design](docs/MOBILE_UI_DESIGN.md) and [Implementation plan](docs/IMPLEMENTATION_PLAN.md). [Progress](docs/PROGRESS.md) records actual verification. The course brief is local and excluded from Git.
 
-This repository contains source, the `.sol` contract, backend JavaScript, HTML/CSS/JavaScript, README and genuine test screenshots. The student will write and manage the required 5–8 page PDF report outside Git. No database or video applies.
+This repository contains the source, contract, backend, mobile pages, setup instructions and selected test screenshots. The required 5–8 page PDF report is managed separately and excluded from Git. The application does not use a database, and the assignment does not require a video.
