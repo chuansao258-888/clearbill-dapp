@@ -1,6 +1,6 @@
 # Shared Bills: Product and Contract Design
 
-Status: design approved; implementation and deployment are pending. ClearBill remains the product name and bill settlement remains its primary purpose.
+Status: contract implemented and locally tested; API, interface and deployment are pending. ClearBill remains the product name and bill settlement remains its primary purpose.
 
 ## Problem and scope
 
