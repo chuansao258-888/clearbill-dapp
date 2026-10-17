@@ -17,7 +17,7 @@ Status at 17 October 2026 (Asia/Singapore). Branch: `main`.
 | Sepolia business flow | Three real bills and eight business transactions confirmed: single payment and refund, two installments, unpaid cancellation; hashes indexed in `docs/evidence/INDEX.md` |
 | Sepolia backend | Separate local server passed `/health` and `/config`; 11 live API assertions checked three final bill states, their histories and all eight confirmed transaction records |
 | Chrome MetaMask | Real extension connected as payee, switched to payer, signed bill 4 creation and 0.0001 ETH payment; both confirmed on Sepolia and appeared in the page timeline |
-| Render hosting | Free web service became Live at `https://clearbill-dapp.onrender.com/`; public health, config, bill 4 and complete two-event history returned HTTP 200; Chrome displayed the hosted bill timeline without a connected wallet |
+| Render hosting | Free web service became Live at `https://clearbill-dapp.onrender.com/`; public health, config, bill 4 and complete two-event history returned HTTP 200; Chrome displayed the hosted bill timeline without a connected wallet; the build pruned development packages before runtime and reported zero remaining dependency advisories |
 
 `npm test` produced 11 contract, 3 API and 3 frontend passing cases. `npm run test:browser` produced 7 passing cases while the local chain, deployment and server were running. A sampled local one-payment creation used 284,086 gas, its payment 71,756 gas and a local full refund 70,388 gas; receipt hashes are recorded in the evidence index. `npm audit --omit=dev` reported zero production dependency advisories at this checkpoint. These figures are local and time-specific.
 
