@@ -15,7 +15,7 @@ Sampled local Hardhat receipts: one-payment creation `0x109f26d26eb7fa157a059b4d
 | --- | --- | --- | --- |
 | E-S01 | Ethereum Sepolia, direct CLI deployment from an external test-key file | Creation transaction `0x1642635ab30c2509edd6a04666069572f2468f22647156a5d0442e67a69ba91a` succeeded in block `11925719`; contract `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa` has runtime bytecode exactly matching the local artifact; independent manifest verifier passed | [Sepolia transaction](https://sepolia.etherscan.io/tx/0x1642635ab30c2509edd6a04666069572f2468f22647156a5d0442e67a69ba91a) |
 
-E-S01 used 10,778,764 gas at 18 wei per gas, so the receipt fee was 0.000000000194017752 test ETH. The explorer was still indexing when first viewed; the independent JSON-RPC receipt and code checks supplied the verification. A retained deployment screenshot is still pending.
+E-S01 used 10,778,764 gas at 18 wei per gas, so the receipt fee was 0.000000000194017752 test ETH. The explorer was still indexing when first viewed; the independent JSON-RPC receipt and code checks supplied the verification. `sepolia-one-to-one-deployment.png` now retains the successful Blockscout transaction view, including the created address and block.
 
 The following Sepolia business transactions were signed by a one-time CLI script using test accounts controlled and authorized by the student. Each submitted receipt had status 1. The private keys were read from outside this repository and were never committed. These transactions verify contract behavior on Sepolia, not the MetaMask user interface.
 
@@ -40,7 +40,7 @@ The local mobile web page was also opened at 390 CSS px against the live Sepolia
 | E-S11 | Bill 2, Paid, three events | `sepolia-paid-mobile.png` |
 | E-S12 | Bill 3, Cancelled, two events | `sepolia-cancelled-mobile.png` |
 
-The remaining screenshots are a retained explorer deployment view, a real MetaMask wallet connection and approval, and an actual phone MetaMask browser view. A retained Render screenshot is also pending.
+The student-provided Chrome screenshot showing ClearBill connected beside the MetaMask extension is retained at `submission/evidence/chrome-wallet-connected-user.png` outside Git because it displays wallet information. It documents the connected desktop wallet view, not an approval popup. Real MetaMask approval-popup and phone-browser screenshots remain outstanding.
 
 On 16 October 2026, the student approved two prompts in the Chrome MetaMask extension. The browser DApp connected first as `0x7ac1c7fb0C77332b2d74688fcA86B9c9A3d5b028`, then switched to `0x280D860553cb04D14cefC35B8726FB360DF633Ff`. It displayed pending and confirmed states for both actions. The backend checked each successful receipt and its matching contract event. The extension popups themselves were not retained as screenshot files.
 
@@ -56,7 +56,7 @@ On 17 October 2026, Render deployed commit `e8f5692` to [clearbill-dapp.onrender
 
 ## Shared installment bills
 
-The separate `SharedBill` contract was deployed on Sepolia at `0x67c95470dd748E2Fb042f1b07df247610C6A75BC`. Its creation receipt, deployment block and runtime bytecode matched the local artifact. These Sepolia transactions were signed with authorized test wallets through a local CLI script, not through MetaMask. Each payment principal was at most 0.00003 test ETH.
+The separate `SharedBill` contract was deployed on Sepolia at `0x67c95470dd748E2Fb042f1b07df247610C6A75BC`. Its creation receipt, deployment block and runtime bytecode matched the local artifact. `sepolia-shared-deployment.png` retains the successful Blockscout transaction view, including the created address and block. These Sepolia transactions were signed with authorized test wallets through a local CLI script, not through MetaMask. Each payment principal was at most 0.00003 test ETH.
 
 | Evidence | Shared bill 1 action | Transaction | Confirmed block |
 | --- | --- | --- | --- |
