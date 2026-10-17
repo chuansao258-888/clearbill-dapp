@@ -1,6 +1,6 @@
 # ClearBill System Architecture
 
-Status: implemented on a local Hardhat chain; contract and backend configuration verified on Sepolia. Real MetaMask actions and hosting remain unverified.
+Status: implemented on a local Hardhat chain; contract and backend configuration verified on Sepolia. Local-site Chrome MetaMask create/pay and initial Render read-only checks are verified. Hosted-origin wallet and phone tests remain open.
 
 ## Components and trust boundaries
 

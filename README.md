@@ -4,7 +4,7 @@ ClearBill is a mobile web DApp for freelancers to issue a one-payment or deposit
 
 ## Current status
 
-The Solidity contract, Express read API and five mobile pages run locally. Automated checks cover the core create, pay, cancel and refund rules on Hardhat. The contract is deployed and bytecode-verified on Sepolia. A Chrome MetaMask test created and paid a bill through the web interface. Phone-wallet testing and public hosting remain open.
+The Solidity contract is deployed and bytecode-verified on Sepolia. The Express API and mobile web pages are live at [clearbill-dapp.onrender.com](https://clearbill-dapp.onrender.com/) on a free Render web service. Automated checks cover the core create, pay, cancel and refund rules on Hardhat. A Chrome MetaMask test created and paid a bill through the local web interface; wallet transactions from the hosted origin and phone-wallet use remain unverified.
 
 ## Requirements
 

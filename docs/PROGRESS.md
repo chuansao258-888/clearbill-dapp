@@ -1,6 +1,6 @@
 # ClearBill Progress Record
 
-Status at 16 October 2026 (Asia/Singapore). Branch: `feat/clearbill`.
+Status at 17 October 2026 (Asia/Singapore). Branch: `main`.
 
 ## Implemented and checked locally
 
@@ -17,6 +17,7 @@ Status at 16 October 2026 (Asia/Singapore). Branch: `feat/clearbill`.
 | Sepolia business flow | Three real bills and eight business transactions confirmed: single payment and refund, two installments, unpaid cancellation; hashes indexed in `docs/evidence/INDEX.md` |
 | Sepolia backend | Separate local server passed `/health` and `/config`; 11 live API assertions checked three final bill states, their histories and all eight confirmed transaction records |
 | Chrome MetaMask | Real extension connected as payee, switched to payer, signed bill 4 creation and 0.0001 ETH payment; both confirmed on Sepolia and appeared in the page timeline |
+| Render hosting | Free web service became Live at `https://clearbill-dapp.onrender.com/`; public health, config, bill 4 and complete two-event history returned HTTP 200; Chrome displayed the hosted bill timeline without a connected wallet |
 
 `npm test` produced 11 contract, 3 API and 3 frontend passing cases. `npm run test:browser` produced 7 passing cases while the local chain, deployment and server were running. A sampled local one-payment creation used 284,086 gas, its payment 71,756 gas and a local full refund 70,388 gas; receipt hashes are recorded in the evidence index. `npm audit --omit=dev` reported zero production dependency advisories at this checkpoint. These figures are local and time-specific.
 
@@ -27,9 +28,10 @@ Status at 16 October 2026 (Asia/Singapore). Branch: `feat/clearbill`.
 | Real MetaMask | Rejection handling and retained extension approval screenshots |
 | Mobile MetaMask | Actual phone in MetaMask's browser, transaction approval and usable layout |
 | Sepolia UI evidence | Retained Chrome MetaMask popup screenshots; bill 4 page screenshot is a separate read-only mobile-width browser capture |
-| Render | HTTPS service health, public configuration and post-restart history reads |
+| Hosted wallet | MetaMask connection and transaction from the Render HTTPS origin |
+| Render restart | History reads after an idle spin-down or service restart |
 
-The Sepolia deployment, CLI-signed paths and desktop Chrome MetaMask create/pay flow are verified. No hosting URL or phone-wallet result is yet claimed. The student is preparing the assignment report separately outside Git.
+The Sepolia deployment, CLI-signed paths, local-site Chrome MetaMask create/pay flow and initial Render read-only deployment checks are verified. No hosted-wallet transaction or phone-wallet result is claimed. The student is preparing the assignment report separately outside Git.
 
 ## Implementation adjustments
 
@@ -39,4 +41,4 @@ The mobile-first requirement supersedes an earlier desktop-priority suggestion. 
 
 ## Remaining operational prerequisites
 
-Authorized funded Sepolia test accounts and a phone with MetaMask are available. A Render account and actual phone browser verification remain outstanding. These affect publication and wallet-specific acceptance, not the verified contract transactions. Never place a private key in the repository or backend.
+Authorized funded Sepolia test accounts and a phone with MetaMask are available. Actual phone browser verification remains outstanding. The Render service uses a public credential-free RPC endpoint; availability and historical log-query limits depend on that provider. Never place a private key in the repository or backend.

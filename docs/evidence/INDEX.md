@@ -40,7 +40,7 @@ The local mobile web page was also opened at 390 CSS px against the live Sepolia
 | E-S11 | Bill 2, Paid, three events | `sepolia-paid-mobile.png` |
 | E-S12 | Bill 3, Cancelled, two events | `sepolia-cancelled-mobile.png` |
 
-The remaining screenshots are a retained explorer deployment view, a real MetaMask wallet connection and approval, and an actual phone MetaMask browser view. Render hosting checks also remain outstanding.
+The remaining screenshots are a retained explorer deployment view, a real MetaMask wallet connection and approval, and an actual phone MetaMask browser view. A retained Render screenshot is also pending.
 
 On 16 October 2026, the student approved two prompts in the Chrome MetaMask extension. The browser DApp connected first as `0x7ac1c7fb0C77332b2d74688fcA86B9c9A3d5b028`, then switched to `0x280D860553cb04D14cefC35B8726FB360DF633Ff`. It displayed pending and confirmed states for both actions. The backend checked each successful receipt and its matching contract event. The extension popups themselves were not retained as screenshot files.
 
@@ -51,3 +51,5 @@ On 16 October 2026, the student approved two prompts in the Chrome MetaMask exte
 | E-S15 | Bill 4 shows Paid and both events at 390 CSS px | — | `sepolia-bill4-paid-mobile.png`; captured separately without a connected wallet |
 
 The fees above are observed Sepolia test ETH costs, not future fee estimates. The Chrome extension test verifies desktop wallet integration and account switching. Its Activity page rechecked the payment hash as confirmed with nine confirmations at the time of inspection and listed both bill 4 events in the payer's seven-event history. Actual phone MetaMask and retained extension-popup images remain unverified.
+
+On 17 October 2026, Render deployed commit `e8f5692` to [clearbill-dapp.onrender.com](https://clearbill-dapp.onrender.com/) on a free Node web service. The public health endpoint returned HTTP 200 with `ready`; the config endpoint returned chain ID `11155111` and contract `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`. Bill 4 returned `Paid`, and its history endpoint returned `payment` and `created` with `complete: true`. The hosted Chrome page displayed those events without a connected wallet. No hosted-origin wallet transaction or retained Render screenshot is claimed.

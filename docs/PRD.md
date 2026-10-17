@@ -33,7 +33,7 @@ Creating a bill does not prove that the payer accepted a debt or that work was d
 | Refund | Creator funds a full refund of all payments received on that bill; bill closes |
 | Privacy | Short public label only; no names, emails, attachments or contracts |
 | Storage | Blockchain authority; no application database |
-| Hosting | Render target; actual deployment remains pending |
+| Hosting | Free Render web service live at `https://clearbill-dapp.onrender.com/`; hosted-wallet testing remains pending |
 
 ## Modules
 

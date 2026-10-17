@@ -1,6 +1,6 @@
 # ClearBill Implementation Plan
 
-Status: P0-P4 implemented and exercised locally; Sepolia contract deployment is verified, while real-wallet business actions and hosting remain outstanding. Branch: `feat/clearbill`. The inventory below records the P0 plan; actual status is maintained in [Progress](PROGRESS.md).
+Status: P0-P4 implemented and exercised locally. Sepolia deployment, local-site Chrome MetaMask create/pay and initial Render hosting checks are verified. Hosted-origin wallet and phone acceptance remain outstanding. Branch: `main`. The inventory below records the original P0 plan; actual status is maintained in [Progress](PROGRESS.md).
 
 ## Delivery approach
 
@@ -147,7 +147,7 @@ No `PRIVATE_KEY`, database URL, JWT secret or administrator address is part of t
 
 ## Remaining operational prerequisites
 
-The submission deadline, real phone availability, test-wallet funding and hosting/GitHub account access have not been recorded. These do not block documentation or local implementation; they must be confirmed before scheduling live acceptance. No paid purchase, remote push or deployment is represented as completed.
+At planning time, the submission deadline, phone availability, test-wallet funding and hosting/GitHub access had not been recorded. The subsequent verified actions and remaining acceptance work are recorded in [Progress](PROGRESS.md). The GitHub push and Render free-service deployment are complete; no paid hosting purchase was made.
 
 ## Definition of done
 
