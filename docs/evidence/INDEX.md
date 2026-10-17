@@ -2,7 +2,9 @@
 
 ## Mobile wallet handoff update
 
-The student later reported that a payment confirmation inside mobile MetaMask did not show a transaction request, while desktop MetaMask did. Five browser regressions now cover wrong-network feedback, the explicit Sepolia switch, creation checks before contract reads, a pending-request error and a wallet request that never returns a hash. The full run passed 20 browser checks. These use simulated providers; the reported physical-phone payment issue is not yet confirmed resolved.
+The student later reported that a payment confirmation inside mobile MetaMask did not show a transaction request, while desktop MetaMask did. Five browser regressions now cover wrong-network feedback, the explicit Sepolia switch, creation checks before contract reads, a pending-request error and a wallet request that never returns a hash. The full run passed 20 browser checks with simulated providers.
+
+After the network and status update was deployed on 17 October 2026, the student confirmed that Confirm on the physical iPhone opened a MetaMask transaction request. This verifies user-reported mobile request initiation. No retained phone screenshot, mobile approval or successful mobile payment receipt was supplied; completed mobile payment remains unverified.
 
 During regression testing, a confirmed local payment could be followed by an older cached API snapshot that still showed Open. Disabling the backend provider's short request cache made the receipt-following bill read show the updated state, and the original one-payment browser check passed. This is a local-chain finding, separate from a mobile wallet approval result.
 
