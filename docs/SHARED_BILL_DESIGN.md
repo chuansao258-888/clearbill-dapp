@@ -1,6 +1,6 @@
 # Shared Bills: Product and Contract Design
 
-Status: contract, read-only API and mobile interface implemented and locally tested. The shared contract is deployed on Sepolia and a two-payer, two-installment bill has been paid in full on-chain. Hosted shared-bill acceptance is pending. ClearBill remains the product name and bill settlement remains its primary purpose.
+Status: contract, read-only API and mobile interface implemented and locally tested. The shared contract is deployed on Sepolia and a two-payer, two-installment bill has been paid in full on-chain. Hosted read-only shared-bill API and mobile page checks passed; real MetaMask shared-bill signing remains unverified. ClearBill remains the product name and bill settlement remains its primary purpose.
 
 ## Problem and scope
 
@@ -46,6 +46,6 @@ The mobile interface keeps one Bill area. Separate creation links select the exi
 
 ## Acceptance and files
 
-Local contract tests cover valid one- and two-stage shared payments; wrong wallet, wrong amount, skipped and repeated stage; mixed payer progress; late payment; cancellation; partial and full refunds; stale total; rejecting recipients; and reentrancy. API and simulated-wallet browser checks cover lists, receipt scope, creation, payments and refund on a local chain. A separate Sepolia flow verified deployment and four real payments across two payer wallets. Hosted shared-bill wallet use and a real phone-wallet flow remain to be checked. Evidence is indexed in `docs/evidence/INDEX.md`.
+Local contract tests cover valid one- and two-stage shared payments; wrong wallet, wrong amount, skipped and repeated stage; mixed payer progress; late payment; cancellation; partial and full refunds; stale total; rejecting recipients; and reentrancy. API and simulated-wallet browser checks cover lists, receipt scope, creation, payments and refund on a local chain. A separate Sepolia flow verified deployment and four real payments across two payer wallets. Hosted read-only API and mobile page checks passed. Hosted shared-bill wallet use and a real phone-wallet flow remain to be checked. Evidence is indexed in `docs/evidence/INDEX.md`.
 
 Implemented files include `contracts/SharedBill.sol`, focused contract fixtures/tests, `server/shared-bills.js`, `server/shared-bill-routes.js`, `public/shared-bill.html`, related page scripts and form/list updates, and `deployment/shared-sepolia.json`. The report is written separately by the student and stays outside Git.

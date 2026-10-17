@@ -1,6 +1,6 @@
 # ClearBill Deployment and Acceptance
 
-Status: both contracts are deployed and verified on Sepolia. The original one-to-one web service is live on Render. The shared-bill API and mobile pages have passed local checks and a Sepolia-backed local read test; the updated hosted service and shared-bill wallet flow remain to be checked.
+Status: both contracts are deployed and verified on Sepolia. The updated Render service passed shared-bill read-only API and mobile page checks. Shared-bill wallet transactions from the hosted origin and mobile MetaMask remain to be checked.
 
 ## Local chain
 
@@ -30,6 +30,8 @@ The separate shared-bill contract was deployed at `0x67c95470dd748E2Fb042f1b07df
 The public service is [clearbill-dapp.onrender.com](https://clearbill-dapp.onrender.com/). Render builds `main` with `npm ci --include=dev && npm run build && npm prune --omit=dev` and starts it with `npm run start`. Build-only tools are removed before runtime. The service uses the Free instance in Ohio and checks `/api/v1/health`. Its environment sets `RPC_URL=https://ethereum-sepolia-rpc.publicnode.com`, `CHAIN_ID=11155111`, `DEPLOYMENT_FILE=deployment/sepolia.json` and `HISTORY_BLOCK_SPAN=10000`. The shared manifest defaults to `deployment/shared-sepolia.json` on Sepolia; `SHARED_DEPLOYMENT_FILE` can override it. The endpoint contains no private credential. Render supplies `PORT`; the service listens on that port.
 
 The initial deployment built commit `e8f5692` and reached Render's Live state. The public `/api/v1/health` returned HTTP 200 and `ready`; `/api/v1/config` returned Sepolia and the verified contract address; bill 4 returned Paid; its history returned the creation and payment events in one complete page. Chrome displayed the hosted bill page and its timeline without a connected wallet. A wallet transaction from this HTTPS origin has not yet been tested. The free service can spin down when idle, and the site depends on the public RPC provider for chain reads.
+
+After commit `e93518d` was pushed to `main`, the public service reported `ready` and returned the shared contract address in `/config`. Hosted shared bill 1 returned Paid, 0.0001 ETH paid and two payers; its history returned five events with `complete=true`, and the last payment receipt returned `confirmed` with one matching event. `/shared-bills/1` returned HTTP 200 and rendered at 390 CSS px in a read-only browser capture. The hosted wallet signing path has not yet been exercised.
 
 ## Evidence and recovery
 

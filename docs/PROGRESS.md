@@ -1,6 +1,6 @@
 # ClearBill Progress Record
 
-Status at 17 October 2026 (Asia/Singapore). Shared-bill work is on `feat/shared-installment-bills`; the hosted `main` deployment has not yet been updated with it.
+Status at 17 October 2026 (Asia/Singapore). Shared-bill work was fast-forwarded into `main` and pushed. The hosted service now serves the shared-bill API and mobile pages.
 
 ## Implemented and checked locally
 
@@ -14,6 +14,7 @@ Status at 17 October 2026 (Asia/Singapore). Shared-bill work is on `feat/shared-
 | History and dashboard | Browser tests loaded confirmed event history and complete chain-derived overview figures on the local chain |
 | Screenshots | Original and shared local-chain screenshots plus genuine Sepolia-backed mobile-width page screenshots are indexed in `docs/evidence/INDEX.md`; the Chrome wallet prompts were observed but not retained as image files |
 | Shared Sepolia flow | Contract receipt and runtime code verified at `0x67c95470dd748E2Fb042f1b07df247610C6A75BC`; two payers completed two installments each on bill 1; contract and local API returned Paid and five events |
+| Shared Render hosting | Public `/health` returned ready; `/config` returned the shared address; shared bill 1 returned Paid, five complete events and a confirmed final payment receipt; the 390 CSS px page rendered without a wallet |
 | Sepolia deployment | Real creation receipt and exact runtime bytecode verified at `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`; public manifest added |
 | Sepolia business flow | Three real bills and eight business transactions confirmed: single payment and refund, two installments, unpaid cancellation; hashes indexed in `docs/evidence/INDEX.md` |
 | Sepolia backend | Separate local server passed `/health` and `/config`; 11 live API assertions checked three final bill states, their histories and all eight confirmed transaction records |
@@ -31,10 +32,9 @@ Status at 17 October 2026 (Asia/Singapore). Shared-bill work is on `feat/shared-
 | Sepolia UI evidence | Retained Chrome MetaMask popup screenshots; bill 4 page screenshot is a separate read-only mobile-width browser capture |
 | Hosted wallet | MetaMask connection and transaction from the Render HTTPS origin |
 | Render restart | History reads after an idle spin-down or service restart |
-| Shared hosted release | Push the shared-bill code, confirm Render deployment, and check hosted shared pages, API and receipts |
 | Shared real wallet | Create or pay a small shared bill through the Chrome MetaMask extension and retain the result |
 
-Both Sepolia deployments, CLI-signed paths, the original local-site Chrome MetaMask create/pay flow and initial Render read-only checks are verified. No shared MetaMask transaction, updated hosted release or phone-wallet result is claimed. The student is preparing the assignment report separately outside Git.
+Both Sepolia deployments, CLI-signed paths, the original local-site Chrome MetaMask create/pay flow and the updated Render read-only checks are verified. No shared MetaMask transaction or phone-wallet result is claimed. The student is preparing the assignment report separately outside Git.
 
 ## Implementation adjustments
 
