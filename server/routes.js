@@ -50,16 +50,18 @@ function time(value, field) {
 }
 
 /** Attaches public read endpoints to the provided verified chain service. */
-function createRoutes(chain, config) {
+function createRoutes(chain, config, shared = null) {
   const router = Router();
   router.get("/health", async (_request, response, next) => {
-    try { await chain.verifyDeployment(); response.json({ status: "ready", chainReady: true }); }
+    try { await chain.verifyDeployment(); if (shared) await shared.verifyDeployment(); response.json({ status: "ready", chainReady: true, sharedReady: Boolean(shared) }); }
     catch (error) { next(error); }
   });
   router.get("/config", async (_request, response, next) => {
     try {
       await chain.verifyDeployment();
-      response.json({ chainId: config.chainId, chainName: config.chainId === 11155111 ? "Sepolia" : "Local Hardhat", currencySymbol: "ETH", contractAddress: config.contractAddress, deploymentBlock: config.deploymentBlock, explorerBaseUrl: config.explorerBaseUrl, abi: config.abi });
+      if (shared) await shared.verifyDeployment();
+      response.json({ chainId: config.chainId, chainName: config.chainId === 11155111 ? "Sepolia" : "Local Hardhat", currencySymbol: "ETH", contractAddress: config.contractAddress, deploymentBlock: config.deploymentBlock, explorerBaseUrl: config.explorerBaseUrl, abi: config.abi,
+        shared: config.shared ? { contractAddress: config.shared.contractAddress, deploymentBlock: config.shared.deploymentBlock, abi: config.shared.abi } : null });
     } catch (error) { next(error); }
   });
   router.get("/snapshot", async (_request, response, next) => {
@@ -144,4 +146,4 @@ function createRoutes(chain, config) {
   return router;
 }
 
-module.exports = { createRoutes, decimal, address };
+module.exports = { createRoutes, decimal, address, resolveSnapshot };

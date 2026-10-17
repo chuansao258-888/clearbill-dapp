@@ -1,6 +1,6 @@
 # ClearBill API Design
 
-Status: implemented and checked locally. Base path: `/api/v1`. All application endpoints are read-only GET requests. Blockchain writes use the contract methods documented in [Smart contract design](SMART_CONTRACT_DESIGN.md).
+Status: one-to-one and shared-bill endpoints implemented and checked locally. Base path: `/api/v1`. All application endpoints are read-only GET requests. Blockchain writes use the methods documented in [Smart contract design](SMART_CONTRACT_DESIGN.md) and [Shared-bill design](SHARED_BILL_DESIGN.md).
 
 ## Conventions
 
@@ -54,6 +54,17 @@ Snapshot {
 | `GET /accounts/:address/history` | Optional `billId`, `type`, `fromTime`, `toTime`, `cursor` | `{items,nextCursor,complete,snapshot}` |
 | `GET /bills/:billId/history` | Optional `type`, `fromTime`, `toTime`, `cursor` | Same history envelope |
 | `GET /transactions/:hash` | None | Verified transaction tracking record |
+
+The routes above address the original one-to-one ledger. The shared contract has its own IDs and routes:
+
+| Method and path | Inputs | Response |
+| --- | --- | --- |
+| `GET /shared-bills/:billId` | Optional snapshot pair | `{bill,snapshot}` |
+| `GET /accounts/:address/shared-bills` | `role=payee\|payer`, `offset`, `limit`, optional snapshot pair | `{items,nextOffset,total,snapshot}` |
+| `GET /shared-bills/:billId/history` | Optional snapshot pair and `beforeBlock` | `{items,nextBeforeBlock,complete,snapshot}` |
+| `GET /shared-transactions/:hash` | None | Verified shared-contract transaction and matching events |
+
+`/config` includes a `shared` object with its contract address, deployment block and ABI when the second deployment is configured. Shared bills contain `kind:"shared"`, a `payers` array with each address, fixed installments, paid progress and next installment, plus bill-level totals and status. Each history request scans at most `HISTORY_BLOCK_SPAN` blocks; the client follows `nextBeforeBlock` until `complete=true`. A refund can emit two or three payer-specific events in one transaction. The receipt endpoint verifies the complete refund set and paid principal. Account-wide Activity and CSV export currently cover the original ledger only; the shared detail page has its own timeline.
 
 `role` is required. Offset defaults to string `"0"`; limit defaults to 20 and must be 1–50. `nextOffset` is null at the end, otherwise a decimal string. Items are returned in descending creation order: the backend translates the requested descending offset into the contract's ascending slice, then reverses it. It reads the total and all records at the same snapshot. Offset equal to total returns empty items; greater offset returns 400.
 

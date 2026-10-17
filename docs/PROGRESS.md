@@ -1,25 +1,26 @@
 # ClearBill Progress Record
 
-Status at 17 October 2026 (Asia/Singapore). Branch: `main`.
+Status at 17 October 2026 (Asia/Singapore). Shared-bill work is on `feat/shared-installment-bills`; the hosted `main` deployment has not yet been updated with it.
 
 ## Implemented and checked locally
 
 | Area | Actual status and evidence |
 | --- | --- |
 | Design | English PRD, contract design, architecture, API, data, mobile UI, security, test and delivery documents exist |
-| Contract | `ClearBill.sol` compiles with Solidity 0.8.28; 11 local contract tests pass |
-| Backend | Express reads a verified local deployment; 3 API tests pass; direct local create/pay receipt and event reads succeeded |
-| Mobile web | Five pages render; 3 precision/label tests and 7 browser tests pass at phone widths |
+| Contract | `ClearBill.sol` and `SharedBill.sol` compile with Solidity 0.8.28; 19 local contract tests pass |
+| Backend | Express reads verified original and shared deployments; 6 API tests pass; shared Sepolia bill, history and payment receipt reads succeeded through a locally run server |
+| Mobile web | Shared creation and detail pages supplement the original pages; 3 precision/label tests and 9 browser tests pass at phone widths |
 | Core transactions | Local browser simulation executed one-payment create/pay and two-installment deposit/full refund on the Hardhat chain |
 | History and dashboard | Browser tests loaded confirmed event history and complete chain-derived overview figures on the local chain |
-| Screenshots | Two local-chain and four genuine Sepolia-backed mobile-width page screenshots are indexed in `docs/evidence/INDEX.md`; the Chrome wallet prompts were observed but not retained as image files |
+| Screenshots | Original and shared local-chain screenshots plus genuine Sepolia-backed mobile-width page screenshots are indexed in `docs/evidence/INDEX.md`; the Chrome wallet prompts were observed but not retained as image files |
+| Shared Sepolia flow | Contract receipt and runtime code verified at `0x67c95470dd748E2Fb042f1b07df247610C6A75BC`; two payers completed two installments each on bill 1; contract and local API returned Paid and five events |
 | Sepolia deployment | Real creation receipt and exact runtime bytecode verified at `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`; public manifest added |
 | Sepolia business flow | Three real bills and eight business transactions confirmed: single payment and refund, two installments, unpaid cancellation; hashes indexed in `docs/evidence/INDEX.md` |
 | Sepolia backend | Separate local server passed `/health` and `/config`; 11 live API assertions checked three final bill states, their histories and all eight confirmed transaction records |
 | Chrome MetaMask | Real extension connected as payee, switched to payer, signed bill 4 creation and 0.0001 ETH payment; both confirmed on Sepolia and appeared in the page timeline |
 | Render hosting | Free web service became Live at `https://clearbill-dapp.onrender.com/`; public health, config, bill 4 and complete two-event history returned HTTP 200; Chrome displayed the hosted bill timeline without a connected wallet; the build pruned development packages before runtime and reported zero remaining dependency advisories |
 
-`npm test` produced 11 contract, 3 API and 3 frontend passing cases. `npm run test:browser` produced 7 passing cases while the local chain, deployment and server were running. A sampled local one-payment creation used 284,086 gas, its payment 71,756 gas and a local full refund 70,388 gas; receipt hashes are recorded in the evidence index. `npm audit --omit=dev` reported zero production dependency advisories at this checkpoint. These figures are local and time-specific.
+`npm test` produced 19 contract, 6 API and 3 frontend passing cases. The local Playwright run produced 9 passing cases while the local chain, both deployments and server were running. A sampled original local one-payment creation used 284,086 gas, its payment 71,756 gas and a local full refund 70,388 gas; receipt hashes are recorded in the evidence index. `npm audit --omit=dev` reported zero production dependency advisories at the earlier checkpoint. These figures are local and time-specific.
 
 ## Not yet verified
 
@@ -30,8 +31,10 @@ Status at 17 October 2026 (Asia/Singapore). Branch: `main`.
 | Sepolia UI evidence | Retained Chrome MetaMask popup screenshots; bill 4 page screenshot is a separate read-only mobile-width browser capture |
 | Hosted wallet | MetaMask connection and transaction from the Render HTTPS origin |
 | Render restart | History reads after an idle spin-down or service restart |
+| Shared hosted release | Push the shared-bill code, confirm Render deployment, and check hosted shared pages, API and receipts |
+| Shared real wallet | Create or pay a small shared bill through the Chrome MetaMask extension and retain the result |
 
-The Sepolia deployment, CLI-signed paths, local-site Chrome MetaMask create/pay flow and initial Render read-only deployment checks are verified. No hosted-wallet transaction or phone-wallet result is claimed. The student is preparing the assignment report separately outside Git.
+Both Sepolia deployments, CLI-signed paths, the original local-site Chrome MetaMask create/pay flow and initial Render read-only checks are verified. No shared MetaMask transaction, updated hosted release or phone-wallet result is claimed. The student is preparing the assignment report separately outside Git.
 
 ## Implementation adjustments
 

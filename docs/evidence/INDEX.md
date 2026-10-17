@@ -53,3 +53,18 @@ On 16 October 2026, the student approved two prompts in the Chrome MetaMask exte
 The fees above are observed Sepolia test ETH costs, not future fee estimates. The Chrome extension test verifies desktop wallet integration and account switching. Its Activity page rechecked the payment hash as confirmed with nine confirmations at the time of inspection and listed both bill 4 events in the payer's seven-event history. Actual phone MetaMask and retained extension-popup images remain unverified.
 
 On 17 October 2026, Render deployed commit `e8f5692` to [clearbill-dapp.onrender.com](https://clearbill-dapp.onrender.com/) on a free Node web service. A later service-configuration deployment used commit `e2e5ec8` and pruned build-only dependencies; the prune step reported zero remaining dependency advisories. The public health endpoint returned HTTP 200 with `ready`; the config endpoint returned chain ID `11155111` and contract `0xFFe1EB9b734fC5bA97DB7C6ad51E5898D05483Aa`. Bill 4 returned `Paid`, and its history endpoint returned `payment` and `created` with `complete: true`. The hosted Chrome page displayed those events without a connected wallet. No hosted-origin wallet transaction or retained Render screenshot is claimed.
+
+## Shared installment bills
+
+The separate `SharedBill` contract was deployed on Sepolia at `0x67c95470dd748E2Fb042f1b07df247610C6A75BC`. Its creation receipt, deployment block and runtime bytecode matched the local artifact. These Sepolia transactions were signed with authorized test wallets through a local CLI script, not through MetaMask. Each payment principal was at most 0.00003 test ETH.
+
+| Evidence | Shared bill 1 action | Transaction | Confirmed block |
+| --- | --- | --- | --- |
+| E-S16 | Shared contract deployment | [Deployment](https://sepolia.etherscan.io/tx/0xe85ceb5f2f198f9c7090edb70c08b56a5d94b7eb0e5331ce2b6e578a559bea12) | 11933137 |
+| E-S17 | Two-payer, two-installment bill created for 0.0001 ETH | [Creation](https://sepolia.etherscan.io/tx/0xdf5ce168c6277976180581f02b113e94278c7989cc785124fd7a29a51dad1d02) | 11933141 |
+| E-S18 | Payer 1 paid installment 1, 0.00002 ETH | [Payment](https://sepolia.etherscan.io/tx/0xb84fa27ec5f413ffcd59658496ebd6fb015eec366da5a1fe01adbe3222a11656) | 11933142 |
+| E-S19 | Payer 1 paid installment 2, 0.00003 ETH | [Payment](https://sepolia.etherscan.io/tx/0xdc3fe1ccf6daf72a4d060ae7e4c8f46cf8a6f0e630403d7166c30b37fd953029) | 11933146 |
+| E-S20 | Payer 2 paid installment 1, 0.00003 ETH | [Payment](https://sepolia.etherscan.io/tx/0x24e5fb1e00619bde7166908cc8d57e55ee2cb7481e426bb5c71c6a707743045b) | 11933149 |
+| E-S21 | Payer 2 paid installment 2, 0.00002 ETH | [Payment](https://sepolia.etherscan.io/tx/0x6275e37837b7861d9f7c223fc6c34d099b94aa8dd4c470707f43bb7d8328ede0) | 11933150 |
+
+After those receipts, the contract and locally run Sepolia-backed API reported `Paid`, 0.0001 ETH paid, zero outstanding, and five confirmed history events. The shared transaction endpoint classified E-S21 as `confirmed` with one matching event. `sepolia-shared-paid-mobile.png` shows the real Sepolia state in a 390 CSS px read-only browser page without a connected wallet. Local simulated-wallet screenshots `local-shared-paid-mobile.png` and `local-shared-refunded-mobile.png` show the complete UI payment/refund flow on a disposable Hardhat chain; they are not Sepolia or real MetaMask evidence. Hosted shared-bill use and a real phone-wallet flow remain unverified.

@@ -45,6 +45,18 @@ export function billCard(bill, counterparty) {
   return link;
 }
 
+/** Creates a shared bill card without confusing its ID with legacy bills. */
+export function sharedBillCard(bill, role) {
+  const link = document.createElement("a"); link.href = `/shared-bills/${bill.id}`; link.className = "bill-card";
+  const top = document.createElement("div"); top.className = "card-top";
+  const title = document.createElement("strong"); title.textContent = bill.label;
+  const badge = document.createElement("span"); badge.className = "badge"; badge.textContent = bill.isOverdue ? `${bill.status} · Overdue` : bill.status;
+  top.append(title, badge);
+  const amount = document.createElement("p"); amount.textContent = `${eth(bill.paidAmountWei)} paid of ${eth(bill.totalAmountWei)}`;
+  const foot = document.createElement("small"); foot.textContent = role === "payee" ? `Shared #${bill.id} · ${bill.payerCount} payers` : `Shared #${bill.id} · ${shortAddress(bill.payee)}`;
+  link.append(top, amount, foot); return link;
+}
+
 /** Opens an accessible review dialog and resolves only after explicit approval. */
 export function review(title, lines, actionLabel = "Confirm") {
   return new Promise(resolve => {

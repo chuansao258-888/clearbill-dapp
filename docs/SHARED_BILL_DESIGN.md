@@ -1,6 +1,6 @@
 # Shared Bills: Product and Contract Design
 
-Status: contract implemented and locally tested; API, interface and deployment are pending. ClearBill remains the product name and bill settlement remains its primary purpose.
+Status: contract, read-only API and mobile interface implemented and locally tested. The shared contract is deployed on Sepolia and a two-payer, two-installment bill has been paid in full on-chain. Hosted shared-bill acceptance is pending. ClearBill remains the product name and bill settlement remains its primary purpose.
 
 ## Problem and scope
 
@@ -42,10 +42,10 @@ The refund loop is bounded by three payers, state changes precede external trans
 
 The original `ClearBill.sol` and Sepolia manifest remain authoritative for legacy one-to-one bills. A new `SharedBill.sol` contract receives a separate deployment address and ledger. The Node.js service verifies both manifests and offers read-only shared-bill detail, account list, event history and transaction receipt endpoints. MetaMask alone owns signing. No database is needed.
 
-The mobile interface keeps one Bill area. The creation form offers one, two or three payers. One payer uses the existing bill flow; two or three use the shared-bill flow. Lists identify the bill type. Shared details show all payer shares and progress, while the connected wallet sees only actions it is authorized to take. Existing `/bills/:id` links continue to resolve to the original contract; shared records use `/shared-bills/:id` so IDs cannot be confused across contracts.
+The mobile interface keeps one Bill area. Separate creation links select the existing one-payer form or the two/three-payer form. The Bill list lets the user switch between one-to-one and shared ledgers. Shared details show all payer shares and progress, while the connected wallet sees only actions it is authorized to take. Existing `/bills/:id` links continue to resolve to the original contract; shared records use `/shared-bills/:id` so IDs cannot be confused across contracts. The Activity page currently covers the original ledger only; each shared bill has its own confirmed event timeline.
 
-## Acceptance and planned files
+## Acceptance and files
 
-Test valid one- and two-stage shared payments; wrong wallet, wrong amount, skipped and repeated stage; mixed payer progress; late payment; cancellation; partial and full refunds; stale total; rejecting recipients; reentrancy; deployment; API pagination and receipt scope; wallet connection and 360/390 px mobile browser flows. Capture actual local and Sepolia screenshots only after verification.
+Local contract tests cover valid one- and two-stage shared payments; wrong wallet, wrong amount, skipped and repeated stage; mixed payer progress; late payment; cancellation; partial and full refunds; stale total; rejecting recipients; and reentrancy. API and simulated-wallet browser checks cover lists, receipt scope, creation, payments and refund on a local chain. A separate Sepolia flow verified deployment and four real payments across two payer wallets. Hosted shared-bill wallet use and a real phone-wallet flow remain to be checked. Evidence is indexed in `docs/evidence/INDEX.md`.
 
-Planned additions: `contracts/SharedBill.sol`, focused contract fixtures/tests, `server/shared-bills.js`, `server/shared-bill-routes.js`, `public/shared-bill.html`, related page scripts and form/list updates, and a separate verified deployment manifest. The report is written separately by the student and stays outside Git.
+Implemented files include `contracts/SharedBill.sol`, focused contract fixtures/tests, `server/shared-bills.js`, `server/shared-bill-routes.js`, `public/shared-bill.html`, related page scripts and form/list updates, and `deployment/shared-sepolia.json`. The report is written separately by the student and stays outside Git.

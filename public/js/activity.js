@@ -15,15 +15,16 @@ function renderLocal() {
   const container = document.querySelector("#local-transactions");
   container.replaceChildren();
   if (!account || !config) return;
-  for (const record of remembered(config, account)) {
+  for (const record of [...remembered(config, account, "shared"), ...remembered(config, account)]) {
+    const kind = config.shared && record.contractAddress === config.shared.contractAddress ? "shared" : "individual";
     const card = document.createElement("div"); card.className = "panel";
-    const label = document.createElement("p"); label.textContent = `${record.method} · ${record.hash}`; label.className = "address";
+    const label = document.createElement("p"); label.textContent = `${kind} · ${record.method} · ${record.hash}`; label.className = "address";
     const state = document.createElement("p"); state.textContent = "Submitted from this browser. Verify its current status.";
     const button = document.createElement("button"); button.textContent = "Check status";
     button.addEventListener("click", async () => {
       button.disabled = true;
       try {
-        const result = await api(`/transactions/${record.hash}`);
+        const result = await api(`${kind === "shared" ? "/shared-transactions" : "/transactions"}/${record.hash}`);
         state.textContent = `${result.state} · ${result.confirmations} confirmation(s)`;
       } catch (error) { state.textContent = errorText(error); }
       finally { button.disabled = false; }

@@ -12,17 +12,18 @@ function remember(record) {
 }
 
 /** Retrieves locally submitted hashes for the current chain, contract and account. */
-export function remembered(config, account) {
+export function remembered(config, account, kind = "individual") {
   try {
+    const contractAddress = kind === "shared" ? config.shared?.contractAddress : config.contractAddress;
     return JSON.parse(localStorage.getItem(storageKey) || "[]").filter(item =>
-      item.chainId === config.chainId && item.contractAddress === config.contractAddress && item.account?.toLowerCase() === account?.toLowerCase());
+      item.chainId === config.chainId && item.contractAddress === contractAddress && item.account?.toLowerCase() === account?.toLowerCase());
   } catch { return []; }
 }
 
 /** Waits for a verified API receipt without treating a hash as success. */
-export async function checkTransaction(hash, progress) {
+export async function checkTransaction(hash, progress, kind = "individual") {
   for (let attempt = 0; attempt < 30; attempt++) {
-    const result = await api(`/transactions/${hash}`);
+    const result = await api(`${kind === "shared" ? "/shared-transactions" : "/transactions"}/${hash}`);
     if (result.state === "confirmed" || result.state === "reverted") return result;
     progress(`Submitted ${hash.slice(0, 10)}… Awaiting confirmation (${result.state}).`);
     if (document.hidden) break;
@@ -32,17 +33,17 @@ export async function checkTransaction(hash, progress) {
 }
 
 /** Reviews, signs, records and reconciles one contract write. */
-export async function sendOperation(config, method, args, value, progress, details) {
+export async function sendOperation(config, method, args, value, progress, details, kind = "individual") {
   progress("Waiting for MetaMask approval…");
   let submittedHash = null;
   try {
-    const { signer, contract } = await requireSigner();
+    const { signer, contract } = await requireSigner(kind);
     const account = await signer.getAddress();
     const tx = await contract[method](...args, { value });
     submittedHash = tx.hash;
-    remember({ chainId: config.chainId, contractAddress: config.contractAddress, account, hash: tx.hash, method, details, submittedAt: Date.now() });
+    remember({ chainId: config.chainId, contractAddress: kind === "shared" ? config.shared.contractAddress : config.contractAddress, account, hash: tx.hash, method, details, submittedAt: Date.now() });
     progress(`Submitted ${tx.hash}. Waiting for a verified receipt…`);
-    const result = await checkTransaction(tx.hash, progress);
+    const result = await checkTransaction(tx.hash, progress, kind);
     if (result.state === "confirmed") progress(`Confirmed in block ${result.blockNumber}.`);
     else if (result.state === "reverted") progress(`Transaction reverted. Hash: ${tx.hash}`);
     else progress(`Confirmation is not yet known. Save this hash: ${tx.hash}. Use Check status later; do not resubmit automatically.`);

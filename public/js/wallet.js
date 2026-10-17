@@ -26,7 +26,7 @@ export async function connectWallet() {
 }
 
 /** Verifies the selected chain immediately before a financial action. */
-export async function requireSigner() {
+export async function requireSigner(kind = "individual") {
   if (!configCache) throw new Error("The contract is not configured.");
   const injected = injectedWallet();
   if (!injected) throw new Error("Open this page in MetaMask to sign a transaction.");
@@ -34,7 +34,9 @@ export async function requireSigner() {
   if (BigInt(network) !== BigInt(configCache.chainId)) throw new Error(`Switch MetaMask to ${configCache.chainName}.`);
   const provider = new BrowserProvider(injected);
   const signer = await provider.getSigner();
-  return { signer, contract: new Contract(configCache.contractAddress, configCache.abi, signer) };
+  const target = kind === "shared" ? configCache.shared : configCache;
+  if (!target) throw new Error("Shared bills are not deployed on this network yet.");
+  return { signer, contract: new Contract(target.contractAddress, target.abi, signer) };
 }
 
 /** Updates the shared account control and refreshes data after wallet changes. */
@@ -46,14 +48,14 @@ export function mountWalletControl(onChange = () => {}) {
     try {
       const account = await currentWallet();
       button.textContent = account ? `${account.slice(0, 6)}…${account.slice(-4)}` : "Connect wallet";
-      const onBillDetail = /^\/bills\/\d+$/.test(window.location.pathname);
-      note.textContent = account ? "Wallet connected" : onBillDetail ? "Connect to manage this bill." : "Connect to view your bills";
+      const onBillDetail = /^\/(bills|shared-bills)\/\d+$/.test(window.location.pathname);
+      if (note) note.textContent = account ? "Wallet connected" : onBillDetail ? "Connect to manage this bill." : "Connect to view your bills";
       onChange(account);
-    } catch (error) { note.textContent = error.message; }
+    } catch (error) { if (note) note.textContent = error.message; }
   };
   button.addEventListener("click", async () => {
     try { await connectWallet(); await refresh(); }
-    catch (error) { note.textContent = error.message; }
+    catch (error) { if (note) note.textContent = error.message; }
   });
   injectedWallet()?.on("accountsChanged", refresh);
   injectedWallet()?.on("chainChanged", () => { onChange(null); window.location.reload(); });

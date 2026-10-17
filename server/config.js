@@ -19,6 +19,11 @@ function loadConfig() {
   if (!/^0x[\da-fA-F]{64}$/.test(manifest.deploymentTransactionHash)) throw new Error("Invalid deployment transaction hash");
   const address = getAddress(manifest.contractAddress);
   const artifact = require("../artifacts/contracts/ClearBill.sol/ClearBill.json");
+  const sharedFile = process.env.SHARED_DEPLOYMENT_FILE || (chainId === 11155111 ? "deployment/shared-sepolia.json" : null);
+  const sharedManifest = sharedFile ? JSON.parse(fs.readFileSync(path.resolve(sharedFile), "utf8")) : null;
+  const sharedArtifact = sharedManifest ? require("../artifacts/contracts/SharedBill.sol/SharedBill.json") : null;
+  if (sharedManifest && (sharedManifest.chainId !== chainId || !Number.isSafeInteger(sharedManifest.deploymentBlock) || sharedManifest.deploymentBlock < 0
+    || !/^0x[\da-fA-F]{64}$/.test(sharedManifest.deploymentTransactionHash))) throw new Error("Invalid shared bill deployment manifest");
   return {
     rpcUrl, chainId, timeoutMs, historyBlockSpan,
     contractAddress: address,
@@ -26,6 +31,13 @@ function loadConfig() {
     deploymentTransactionHash: manifest.deploymentTransactionHash,
     abi: artifact.abi,
     deployedBytecode: artifact.deployedBytecode,
+    shared: sharedManifest ? {
+      contractAddress: getAddress(sharedManifest.contractAddress),
+      deploymentBlock: sharedManifest.deploymentBlock,
+      deploymentTransactionHash: sharedManifest.deploymentTransactionHash,
+      abi: sharedArtifact.abi,
+      deployedBytecode: sharedArtifact.deployedBytecode
+    } : null,
     explorerBaseUrl: chainId === 11155111 ? "https://sepolia.etherscan.io" : null,
     port: Number(process.env.PORT || 3000)
   };

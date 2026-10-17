@@ -1,10 +1,10 @@
 # ClearBill Deployment and Acceptance
 
-Status: local chain exercised; Sepolia contract, CLI-signed business transactions and a local-site Chrome MetaMask create/pay flow confirmed on 16 October 2026. The Render web service became live on 17 October 2026. Wallet transactions from the hosted origin and mobile MetaMask remain pending.
+Status: both contracts are deployed and verified on Sepolia. The original one-to-one web service is live on Render. The shared-bill API and mobile pages have passed local checks and a Sepolia-backed local read test; the updated hosted service and shared-bill wallet flow remain to be checked.
 
 ## Local chain
 
-Follow the exact commands in the repository README. `npm run deploy:local` sends a creation transaction from a disposable unlocked Hardhat account and writes `.local/deployment.json`. The server checks chain ID, creation receipt and runtime bytecode before serving the API. Local browser tests create additional transactions and reset no chain state, so bill IDs increase across runs.
+Follow the exact commands in the repository README. `npm run deploy:local` sends creation transactions from a disposable unlocked Hardhat account and writes `.local/deployment.json` and `.local/shared-deployment.json`. Set `SHARED_DEPLOYMENT_FILE=.local/shared-deployment.json` to enable shared bills on the local server. The server checks chain ID, creation receipts and runtime bytecode before serving the API. Local browser tests create additional transactions and reset no chain state, so bill IDs increase across runs.
 
 For a fresh reproducible run, stop the old chain, start a new one, deploy again and restart the server. Delete only local browser state for this site's test origin if pending records refer to the old chain; the app will not reinterpret those records as valid new-chain transactions.
 
@@ -23,9 +23,11 @@ Three bills were then exercised with authorized test accounts. Bill 1 was create
 
 A separate Chrome MetaMask test connected first as the payee and then switched to the payer. The payee created bill 4 from the mobile web interface for 0.0001 test ETH, and the payer paid it through the same interface. Both wallet prompts were reviewed and approved by the student. The page showed a pending state after submission and then a mined confirmation; the backend independently verified matching creation and payment events. Bill 4 is Paid and its public hashes are in the evidence index. This was a desktop Chrome extension test, not an actual phone test.
 
+The separate shared-bill contract was deployed at `0x67c95470dd748E2Fb042f1b07df247610C6A75BC` in block `11933137`; its receipt and runtime code matched the checked-in manifest and local build. Shared bill 1 was created with two payer wallets, each owing two installments. All four payments succeeded on Sepolia; contract state and the Sepolia-backed local API reported Paid, 0.0001 ETH paid and five confirmed events. These actions used authorized test keys through a local CLI script. They do not establish that the new shared-bill pages work with real MetaMask or on the hosted origin. Public hashes and a read-only mobile-width screenshot are in the evidence index.
+
 ## Render web service
 
-The public service is [clearbill-dapp.onrender.com](https://clearbill-dapp.onrender.com/). Render builds `main` with `npm ci --include=dev && npm run build && npm prune --omit=dev` and starts it with `npm run start`. Build-only tools are removed before runtime. The service uses the Free instance in Ohio and checks `/api/v1/health`. Its environment sets `RPC_URL=https://ethereum-sepolia-rpc.publicnode.com`, `CHAIN_ID=11155111`, `DEPLOYMENT_FILE=deployment/sepolia.json` and `HISTORY_BLOCK_SPAN=10000`. The endpoint contains no private credential. Render supplies `PORT`; the service listens on that port.
+The public service is [clearbill-dapp.onrender.com](https://clearbill-dapp.onrender.com/). Render builds `main` with `npm ci --include=dev && npm run build && npm prune --omit=dev` and starts it with `npm run start`. Build-only tools are removed before runtime. The service uses the Free instance in Ohio and checks `/api/v1/health`. Its environment sets `RPC_URL=https://ethereum-sepolia-rpc.publicnode.com`, `CHAIN_ID=11155111`, `DEPLOYMENT_FILE=deployment/sepolia.json` and `HISTORY_BLOCK_SPAN=10000`. The shared manifest defaults to `deployment/shared-sepolia.json` on Sepolia; `SHARED_DEPLOYMENT_FILE` can override it. The endpoint contains no private credential. Render supplies `PORT`; the service listens on that port.
 
 The initial deployment built commit `e8f5692` and reached Render's Live state. The public `/api/v1/health` returned HTTP 200 and `ready`; `/api/v1/config` returned Sepolia and the verified contract address; bill 4 returned Paid; its history returned the creation and payment events in one complete page. Chrome displayed the hosted bill page and its timeline without a connected wallet. A wallet transaction from this HTTPS origin has not yet been tested. The free service can spin down when idle, and the site depends on the public RPC provider for chain reads.
 

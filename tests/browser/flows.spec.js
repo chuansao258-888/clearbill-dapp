@@ -149,6 +149,67 @@ test("simulated wallets pay a deposit and fund a full refund", async ({ browser 
   await payerPage.close();
 });
 
+test("shared bill form rejects duplicate payer wallets before signing", async ({ page }) => {
+  const accounts = await new JsonRpcProvider("http://127.0.0.1:8545").send("eth_accounts", []);
+  await installLocalWallet(page, 0);
+  await page.goto("/shared-bills/new");
+  await page.locator("#label").fill("Shared equipment");
+  await page.locator("#payer-1").fill(accounts[1]);
+  await page.locator("#payer-2").fill(accounts[1]);
+  await page.locator("#amount-1-1").fill("0.001");
+  await page.locator("#amount-2-1").fill("0.002");
+  await page.locator("#due-one").fill(new Date(Date.now() + 86_400_000).toISOString().slice(0, 16));
+  await page.getByRole("button", { name: "Review and create" }).click();
+  await expect(page.locator("#form-error")).toContainText("different wallet address");
+});
+
+test("simulated wallets create, pay and refund a two-payer installment bill", async ({ browser }) => {
+  const pages = await Promise.all([0, 1, 2].map(async index => {
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    await installLocalWallet(page, index);
+    return page;
+  }));
+  const errors = [];
+  pages.forEach(page => page.on("pageerror", error => errors.push(error.message)));
+  const accounts = await new JsonRpcProvider("http://127.0.0.1:8545").send("eth_accounts", []);
+  const creator = pages[0];
+  await creator.goto("/shared-bills/new");
+  await creator.locator("#label").fill("Shared browser check");
+  await creator.locator("#installment-count").selectOption("2");
+  await creator.locator("#payer-1").fill(accounts[1]);
+  await creator.locator("#payer-2").fill(accounts[2]);
+  await creator.locator("#amount-1-1").fill("0.001");
+  await creator.locator("#amount-1-2").fill("0.002");
+  await creator.locator("#amount-2-1").fill("0.002");
+  await creator.locator("#amount-2-2").fill("0.001");
+  await creator.locator("#due-one").fill(new Date(Date.now() + 86_400_000).toISOString().slice(0, 16));
+  await creator.locator("#due-two").fill(new Date(Date.now() + 172_800_000).toISOString().slice(0, 16));
+  await creator.getByRole("button", { name: "Review and create" }).click();
+  await expect(creator.getByRole("dialog")).toBeVisible();
+  await creator.getByRole("button", { name: "Create bill", exact: true }).click();
+  await expect(creator).toHaveURL(/\/shared-bills\/\d+$/);
+  const url = creator.url();
+  const expected = ["0.001 ETH", "0.003 ETH", "0.005 ETH", "0.006 ETH"];
+  let step = 0;
+  for (const [index, installment] of [[1, 1], [2, 1], [1, 2], [2, 2]]) {
+    await pages[index].goto(url);
+    await pages[index].getByRole("button", { name: `Pay my installment ${installment}` }).click();
+    await pages[index].getByRole("button", { name: "Confirm", exact: true }).click();
+    await expect(pages[index].locator("#bill-details .row:nth-child(4) strong"))
+      .toHaveText(expected[step++], { timeout: 15000 });
+  }
+  await creator.reload();
+  await expect(creator.locator("#bill-details .row:nth-child(2) strong")).toHaveText("Paid");
+  await creator.screenshot({ path: "docs/evidence/local-shared-paid-mobile.png", fullPage: true });
+  await creator.getByRole("button", { name: /Refund all 0.006 ETH/ }).click();
+  await creator.getByRole("button", { name: "Fund refund" }).click();
+  await expect(creator.locator("#bill-details .row:nth-child(2) strong")).toHaveText("Refunded", { timeout: 15000 });
+  await creator.screenshot({ path: "docs/evidence/local-shared-refunded-mobile.png", fullPage: true });
+  expect(await creator.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  expect(errors).toEqual([]);
+  await Promise.all(pages.map(page => page.close()));
+});
+
 test("mobile overview and activity show complete chain-derived results", async ({ page }) => {
   await installLocalWallet(page, 0);
   await page.goto("/");

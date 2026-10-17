@@ -36,6 +36,8 @@ p { margin:8px 0 14px; }
 .form-field input, .form-field select { width:100%; min-height:48px; border:1px solid #aebbd0; border-radius:12px; padding:10px 12px; background:white; color:var(--ink); }
 .form-field small { display:block; }
 .form-error { color:#9a1c23; }
+.payer-fields { margin:16px 0; padding:0 14px; border:1px solid var(--line); border-radius:12px; }
+.payer-fields legend { font-weight:700; padding:0 6px; }
 .status { padding:12px; background:var(--pale); border-radius:12px; overflow-wrap:anywhere; }
 .status:empty { display:none; }
 .bill-grid { display:grid; gap:12px; }

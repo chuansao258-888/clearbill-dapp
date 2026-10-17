@@ -2,18 +2,22 @@ const express = require("express");
 const path = require("node:path");
 const { ApiError } = require("./chain");
 const { createRoutes } = require("./routes");
+const { createSharedRoutes } = require("./shared-bill-routes");
 
 /** Creates the static mobile site and read-only API with sanitized errors. */
-function createApp(chain, config) {
+function createApp(chain, config, shared = null) {
   const app = express();
   const root = path.join(__dirname, "../public");
   app.disable("x-powered-by");
-  app.use("/api/v1", createRoutes(chain, config));
+  app.use("/api/v1", createRoutes(chain, config, shared));
+  if (shared) app.use("/api/v1", createSharedRoutes(shared, chain, config));
   app.use(express.static(root));
   app.get("/", (_request, response) => response.sendFile(path.join(root, "index.html")));
   app.get("/bills", (_request, response) => response.sendFile(path.join(root, "bills.html")));
   app.get("/bills/new", (_request, response) => response.sendFile(path.join(root, "create-bill.html")));
+  app.get("/shared-bills/new", (_request, response) => response.sendFile(path.join(root, "create-shared-bill.html")));
   app.get("/bills/:id", (_request, response) => response.sendFile(path.join(root, "bill.html")));
+  app.get("/shared-bills/:id", (_request, response) => response.sendFile(path.join(root, "shared-bill.html")));
   app.get("/activity", (_request, response) => response.sendFile(path.join(root, "activity.html")));
   app.use((error, _request, response, _next) => {
     if (error instanceof ApiError) return response.status(error.status).json({ error: { code: error.code, message: error.message, field: error.field } });
