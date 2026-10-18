@@ -1,5 +1,11 @@
 # ClearBill Evidence Index
 
+## First connection header refresh
+
+On 18 October 2026, controlled browser tests reproduced a header that stayed at Connect wallet after account approval when a subsequent `eth_accounts` read returned empty. A late initial disconnected read also overwrote the connected header. A delayed network request postponed the address display, and account-change events were unnecessarily followed by another account read. The ordinary first-connection case passed before the fix. These timings were simulated; no new physical-phone failure is claimed.
+
+The header now uses the approved account and the account-change event payload directly. It displays the address before network lookup and ignores older asynchronous results. Seven new browser checks cover first connection without an event, stale account reads, late initial results, slow network lookup, account switching/disconnect, rejection and network errors. All 18 selected wallet browser checks and 9 frontend checks passed. Existing wrong-network transaction checks still passed. No wallet transaction was submitted in these tests.
+
 ## RPC service recovery
 
 On 18 October 2026, Render logs showed repeated startup failures while PublicNode returned no receipt for the original ClearBill deployment. Independent receipt data matched the existing manifest. The replacement public endpoint, `https://0xrpc.io/sep`, passed both contracts' deployment receipt and exact runtime checks. No contract was redeployed and no transaction was submitted for this recovery.

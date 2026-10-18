@@ -80,6 +80,7 @@ test("MetaMask's mobile browser requests accounts without another app redirect",
   await expect(page.locator("#wallet-help")).toHaveCount(0);
   await page.getByRole("button", { name: "Connect wallet", exact: true }).click();
   await expect(page.locator("#wallet-note")).toHaveText("Wallet connected");
+  await expect(page.locator("#wallet-button")).toHaveText("0x280D…33Ff");
   await expect(page).toHaveURL(`${origin}/bills`);
   await context.close();
 });

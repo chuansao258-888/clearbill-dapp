@@ -120,31 +120,40 @@ export function mountWalletControl(onChange = () => {}) {
   if (!button) return;
   const help = mobileWalletHelp(note);
   let wrongNetwork = false;
-  const refresh = async () => {
+  let revision = 0;
+  /** Uses approved or event accounts directly and ignores older asynchronous reads. */
+  const refresh = async (knownAccount = undefined) => {
+    const currentRevision = ++revision;
     try {
-      const account = await currentWallet();
-      const chainId = account ? BigInt(await injectedWallet().request({ method: "eth_chainId" })) : null;
-      wrongNetwork = chainId !== null && configCache && chainId !== BigInt(configCache.chainId);
-      button.textContent = wrongNetwork ? `Switch to ${configCache.chainName}` : account ? `${account.slice(0, 6)}…${account.slice(-4)}` : "Connect wallet";
+      const account = knownAccount === undefined ? await currentWallet() : knownAccount;
+      if (currentRevision !== revision) return;
+      wrongNetwork = false;
+      button.textContent = account ? `${account.slice(0, 6)}…${account.slice(-4)}` : "Connect wallet";
       const onBillDetail = /^\/(bills|shared-bills)\/\d+$/.test(window.location.pathname);
       if (help) help.hidden = Boolean(injectedWallet());
       if (note) note.textContent = account ? "Wallet connected" : help && !help.hidden ? "Connect wallet opens this page in MetaMask." : onBillDetail ? "Connect to manage this bill." : "Connect to view your bills";
-      if (note && wrongNetwork) note.textContent = `Wallet connected to ${chainId === 1n ? "Ethereum Mainnet" : `chain ${chainId}`}. Switch to ${configCache.chainName} before creating or paying a bill.`;
+      if (note && account) note.textContent = "Wallet connected. Checking network…";
       onChange(account);
-    } catch (error) { if (note) note.textContent = error.message; }
+      if (!account) return;
+      const chainId = BigInt(await injectedWallet().request({ method: "eth_chainId" }));
+      if (currentRevision !== revision) return;
+      wrongNetwork = configCache && chainId !== BigInt(configCache.chainId);
+      if (wrongNetwork) button.textContent = `Switch to ${configCache.chainName}`;
+      if (note) note.textContent = wrongNetwork ? `Wallet connected to ${chainId === 1n ? "Ethereum Mainnet" : `chain ${chainId}`}. Switch to ${configCache.chainName} before creating or paying a bill.` : "Wallet connected";
+    } catch (error) { if (currentRevision === revision && note) note.textContent = error.message; }
   };
   button.addEventListener("click", async () => {
     button.disabled = true;
     try {
       if (wrongNetwork) { await switchWalletNetwork(); await refresh(); return; }
       const account = await connectWallet();
-      if (account) await refresh();
+      if (account) await refresh(account);
       else if (note) note.textContent = "Opening MetaMask. If it does not open, use the options below.";
     }
     catch (error) { if (note) note.textContent = error.message; }
     finally { button.disabled = false; }
   });
-  injectedWallet()?.on("accountsChanged", refresh);
+  injectedWallet()?.on("accountsChanged", accounts => refresh(accounts[0] ?? null));
   injectedWallet()?.on("chainChanged", () => { onChange(null); window.location.reload(); });
   refresh();
 }

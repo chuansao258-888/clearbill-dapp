@@ -109,6 +109,8 @@ Six additional browser checks passed for the mobile handoff controls, copy fallb
 
 The five checks in `wallet-network.spec.js` cover network switching, creation preflight, visible payment errors and unresolved wallet requests. A payment request is never automatically resent. The backend also avoids reusing an older cached block immediately after confirmation.
 
+Seven checks in `wallet-connect.spec.js` cover the first connection header, delayed or stale account/network reads, account changes, disconnect and rejection. The header uses the approved account immediately and ignores older responses. The latest focused run passed all 18 wallet browser checks and 9 frontend checks using controlled providers, without sending transactions.
+
 Both contracts have verified Sepolia deployment receipts and matching runtime code. A real one-to-one bill was created and paid through the local web interface with Chrome MetaMask. A two-payer shared bill was created and paid in four installments on Sepolia using authorized test wallets through a CLI script. The hosted shared-bill API and read-only mobile page were checked against that chain state. Shared-bill signing through real MetaMask and use inside a phone wallet have not been verified.
 
 ## Security and limits
