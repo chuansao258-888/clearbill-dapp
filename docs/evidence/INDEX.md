@@ -1,5 +1,13 @@
 # ClearBill Evidence Index
 
+## RPC service recovery
+
+On 18 October 2026, Render logs showed repeated startup failures while PublicNode returned no receipt for the original ClearBill deployment. Independent receipt data matched the existing manifest. The replacement public endpoint, `https://0xrpc.io/sep`, passed both contracts' deployment receipt and exact runtime checks. No contract was redeployed and no transaction was submitted for this recovery.
+
+Commit `8425e5c` reached Render's Live state. The public homepage, `/healthz`, `/api/v1/health` and `/api/v1/config` returned HTTP 200. Readiness reported both ledgers ready on Sepolia. Ordinary bill 4 and shared bill 1 returned Paid. Following pagination returned both ordinary bill events with `complete: true`; the shared history returned all five events with `complete: true`. The previously recorded ordinary payment returned confirmed. These are read-only checks of existing transactions, not new wallet payment tests.
+
+The recovery regression run passed 19 contract tests, 9 API tests, 9 frontend tests and 20 browser checks. The API tests cover unavailable deployment receipts, actual manifest mismatches and HTTP liveness without an RPC call. Solidity source line endings are fixed to LF to keep compiled metadata consistent across Windows and Linux. Render now probes `/healthz`; `/api/v1/health` retains strict blockchain readiness checks. A public RPC can still fail or rate-limit.
+
 ## Mobile wallet handoff update
 
 The student later reported that a payment confirmation inside mobile MetaMask did not show a transaction request, while desktop MetaMask did. Five browser regressions now cover wrong-network feedback, the explicit Sepolia switch, creation checks before contract reads, a pending-request error and a wallet request that never returns a hash. The full run passed 20 browser checks with simulated providers.
