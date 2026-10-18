@@ -96,7 +96,7 @@ npm test
 npm run verify:deployment
 ```
 
-`npm test` runs contract, API and frontend checks. The latest individual runs passed 19 contract tests, 6 API tests and 9 frontend tests, including mobile handoff and wallet errors. With the local chain, both deployments and server running, install Playwright's Chromium once and run the mobile-width browser suite:
+`npm test` runs contract, API and frontend checks. The latest runs passed 19 contract tests, 9 API tests and 9 frontend tests, including mobile handoff and wallet errors. The API suite also checks process liveness, unavailable deployment receipts and genuine manifest mismatches. With the local chain, both deployments and server running, install Playwright's Chromium once and run the mobile-width browser suite:
 
 ```powershell
 npx playwright install chromium
@@ -120,6 +120,8 @@ Both contracts have verified Sepolia deployment receipts and matching runtime co
 - The site depends on its configured RPC provider for reads. A recent confirmation can still be affected by a chain reorganization, and a contract deployment cannot be undone by changing the website.
 
 Further details are in the [architecture](docs/ARCHITECTURE.md), [security design](docs/SECURITY.md), [data design](docs/DATA_DESIGN.md) and [test plan](docs/TEST_PLAN.md).
+
+Render uses `/healthz` to check that the HTTP process responds. `/api/v1/health` separately checks blockchain readiness and returns an error when deployment verification fails. An HTTP liveness response does not prove that chain operations are available. The [deployment guide](docs/DEPLOYMENT.md) records the RPC recovery and remaining public-provider limits.
 
 ## Repository and submission
 

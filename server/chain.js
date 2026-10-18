@@ -16,8 +16,10 @@ function createChain(config, provider = null) {
   if (!provider) {
     const request = new FetchRequest(config.rpcUrl);
     request.timeout = config.timeoutMs;
+    request.setHeader("Content-Type", "application/json");
+    request.setHeader("User-Agent", "ClearBill/1.0");
     // A read immediately after a receipt must not reuse a cached older block.
-    provider = new JsonRpcProvider(request, config.chainId, { staticNetwork: true, cacheTimeout: -1 });
+    provider = new JsonRpcProvider(request, config.chainId, { staticNetwork: true, cacheTimeout: -1, batchMaxCount: 1 });
   }
   const contract = new Contract(config.contractAddress, config.abi, provider);
   const iface = new Interface(config.abi);
@@ -32,7 +34,8 @@ function createChain(config, provider = null) {
       provider.getCode(config.contractAddress)
     ]);
     if (BigInt(networkId) !== BigInt(config.chainId)) throw new ApiError(503, "SETUP_REQUIRED", "The configured chain does not match the deployment.");
-    if (!receipt || receipt.status !== 1 || receipt.blockNumber !== config.deploymentBlock || receipt.contractAddress?.toLowerCase() !== config.contractAddress.toLowerCase()) {
+    if (!receipt) throw new ApiError(503, "RPC_RECEIPT_UNAVAILABLE", "The RPC provider did not return the deployment receipt. Check the provider before changing the manifest.");
+    if (receipt.status !== 1 || receipt.blockNumber !== config.deploymentBlock || receipt.contractAddress?.toLowerCase() !== config.contractAddress.toLowerCase()) {
       throw new ApiError(503, "SETUP_REQUIRED", "The deployment receipt does not match the manifest.");
     }
     if (code.toLowerCase() !== config.deployedBytecode.toLowerCase()) throw new ApiError(503, "SETUP_REQUIRED", "The deployed contract code does not match the build.");

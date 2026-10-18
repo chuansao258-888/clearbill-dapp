@@ -16,7 +16,9 @@ function createSharedChain(config, provider) {
       provider.send("eth_chainId", []), provider.getTransactionReceipt(settings.deploymentTransactionHash),
       provider.getCode(settings.contractAddress)
     ]);
-    if (BigInt(chainId) !== BigInt(config.chainId) || !receipt || receipt.status !== 1
+    if (BigInt(chainId) !== BigInt(config.chainId)) throw new ApiError(503, "SHARED_SETUP_REQUIRED", "The shared bill chain does not match its manifest.");
+    if (!receipt) throw new ApiError(503, "RPC_RECEIPT_UNAVAILABLE", "The RPC provider did not return the shared deployment receipt. Check the provider before changing the manifest.");
+    if (receipt.status !== 1
       || receipt.blockNumber !== settings.deploymentBlock
       || receipt.contractAddress?.toLowerCase() !== settings.contractAddress.toLowerCase()
       || code.toLowerCase() !== settings.deployedBytecode.toLowerCase()) {

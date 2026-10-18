@@ -9,6 +9,8 @@ function createApp(chain, config, shared = null) {
   const app = express();
   const root = path.join(__dirname, "../public");
   app.disable("x-powered-by");
+  // Process liveness is separate from the strict blockchain readiness endpoint.
+  app.get("/healthz", (_request, response) => response.json({ status: "ok" }));
   app.use("/api/v1", createRoutes(chain, config, shared));
   if (shared) app.use("/api/v1", createSharedRoutes(shared, chain, config));
   app.use(express.static(root));

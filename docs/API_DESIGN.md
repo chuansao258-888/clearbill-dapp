@@ -27,7 +27,7 @@ Errors have this shape:
 | 400 | INVALID_ARGUMENT, INVALID_CURSOR | Invalid syntax, range or query combination |
 | 404 | BILL_NOT_FOUND | Well-formed but unknown bill ID |
 | 409 | SNAPSHOT_CHANGED, TRANSACTION_SCOPE_MISMATCH | Reorganization or unrelated transaction |
-| 503 | SETUP_REQUIRED, CHAIN_UNAVAILABLE, RPC_LIMIT | Configuration, provider availability or query capacity failure |
+| 503 | SETUP_REQUIRED, SHARED_SETUP_REQUIRED, RPC_RECEIPT_UNAVAILABLE, CHAIN_UNAVAILABLE, RPC_LIMIT | Configuration, missing RPC receipt, provider availability or query capacity failure |
 | 504 | CHAIN_TIMEOUT | RPC request exceeded the configured timeout |
 
 ## Snapshot schema
@@ -46,7 +46,7 @@ Snapshot {
 
 | Method and path | Inputs | Response |
 | --- | --- | --- |
-| `GET /health` | None | Process and chain readiness, 200 or 503 |
+| `GET /health` | None | Strict chain readiness, 200 or 503 |
 | `GET /config` | None | Public network, deployment and ABI configuration |
 | `GET /snapshot` | None | `{snapshot}` |
 | `GET /bills/:billId` | Optional snapshot pair | `{bill,snapshot}` |
@@ -72,7 +72,9 @@ The routes above address the original one-to-one ledger. The shared contract has
 
 `/config` returns `chainId`, `chainName`, `currencySymbol`, `contractAddress`, `deploymentBlock`, `explorerBaseUrl` and `abi`. Values come from validated configuration and build artifacts, never hard-coded sample deployment values. The ABI exposes no secret. RPC URLs are not included. Missing or mismatched deployment returns 503.
 
-`/health` returns `{status:"ready",chainReady:true}` when receipt and code checks succeed. A chain or deployment failure returns a sanitized 503 error. A missing or malformed startup configuration prevents the server from listening.
+`/health` under `/api/v1` returns `{status:"ready",chainReady:true,sharedReady:boolean}` when receipt and code checks succeed. A chain or deployment failure returns a sanitized 503 error. A missing receipt uses `RPC_RECEIPT_UNAVAILABLE`; conflicting receipt contents still use a setup error. A missing or malformed startup configuration prevents the server from listening.
+
+`GET /healthz` is outside the API prefix and returns `{status:"ok"}` without RPC calls. Render uses it to check HTTP process liveness. It does not indicate chain readiness or payment success; clients use the API readiness and transaction endpoints for those checks.
 
 ## Bill schema
 

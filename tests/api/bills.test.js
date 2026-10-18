@@ -42,3 +42,18 @@ test("wrong deployment state is not reported as ready", async () => {
   assert.equal(result.status, 503);
   assert.equal(result.body.error.code, "CHAIN_UNAVAILABLE");
 });
+
+test("web liveness stays responsive while blockchain readiness fails", async () => {
+  let calls = 0;
+  const server = createApp({ verifyDeployment: async () => { calls++; throw new Error("RPC unavailable"); } }, {}).listen(0);
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`;
+    const alive = await fetch(`${root}/healthz`);
+    assert.equal(alive.status, 200);
+    assert.deepEqual(await alive.json(), { status: "ok" });
+    assert.equal(calls, 0);
+    const ready = await fetch(`${root}/api/v1/health`);
+    assert.equal(ready.status, 503);
+    assert.equal(calls, 1);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
